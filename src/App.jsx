@@ -1,9 +1,6 @@
 import { useState } from 'react'
 import reactLogo from './assets/react.svg'
 import './App.css'
-import Header from "./Header.jsx";
-import {Footer} from "./Footer.jsx";
-import OrderList from "./OrderList.jsx";
 
 /*
 
@@ -85,21 +82,27 @@ react 17 old way ->
 //we actually test on react file on a vite built easily in webstorm, or can try online stackblitz
 */
 
-
-
+//remember import & export basics
+    //export default for only one item per module file, can put export before function and not at page bottom
+    //export default does not need curly braces around it for export/import
+    //export/import normal, means we have many items, which needs curly braces wrapping.. easy!
+    //when we have so many items to type, we don't want to type 20.. so we do export ap as obj -
+        //this gives an object to use dot notation on any import items, like obj.Header
+import Header from "./components/Header.jsx";
+import Content from "./components/content.jsx";
+import Footer from "./components/footer.jsx";
 
 
 function App() {
 
   return (
-        <div>
-            <Header></Header>
-            <OrderList></OrderList>
-            <Footer></Footer>
-        </div>
+            <div className="container">
+                <Header></Header>
+                <Content></Content>
+                <Footer></Footer>
+            </div>
   )
 }
-
 
 
 

@@ -1,12 +1,12 @@
 :root {
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
+
   font-weight: 400;
 
   color-scheme: light dark;
   color: rgba(255, 255, 255, 0.87);
   background-color: #2E3440;
-
+  box-sizing: border-box;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
@@ -32,18 +32,17 @@ body {
 }
 
 h1 {
-  font-size: 3.2em;
+  font-size: 2rem;
   line-height: 1.1;
 }
 
 button {
-  border-radius: 8px;
+
   border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
+
+
   font-family: inherit;
-  background-color: #1a1a1a;
+  background-color: white;
   cursor: pointer;
   transition: border-color 0.25s;
 }
@@ -52,7 +51,7 @@ button:hover {
 }
 button:focus,
 button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
+
 }
 
 @media (prefers-color-scheme: light) {
@@ -69,50 +68,88 @@ button:focus-visible {
 }
 
 
-.nav-items {
-list-style: none;
-display: flex;
-flex-flow: row;
-}
-.nav-items > li {
-    margin: 0 10px;
-    font-weight: bold;
-}
-.react-img {
-    width: 70px;
-}
-.nav-b {
-    display: flex;
-    /*flex-wrap: nowrap;*/
-    flex-flow: row;
-    align-items: center;
-    justify-content: space-between;
-    padding: 10px;
-}
 
-
-.root div {
-width: 500px;
-height: 500px;
-}
 
 body {
 margin: 0;
 }
 
 
+.container {
+  width: 317px;
+  height: 780px;
+  margin: 10px;
+  background-color: #3B4252;
+  border-radius: 10px;
+}
+
+.container > header > img {
+height: 317px;
+width: 317px;
+margin-top: -1px;
+border-radius: 7px 7px 0 0;
+margin-bottom: 0;
+}
+.container >header>h2, .container >header>div {
+
+ }
+.container > header {
+display: flex;
+flex-direction: column;
+align-items: center;
+background-color: red;
+}
+.name {
+color: rgb(236, 239, 244);
+font-size: 25px;
+margin: 12px 0 0 0;
+}
+.job {
+color: #F3BF99;
+font-size: 13px;
+font-weight: normal;
+line-height: normal;
+margin: 10px 0 0 0;
+}
+.website {
+color: rgb(236, 239, 244);
+font-size: 11px;
+font-weight: normal;
+margin: 12px 0 20px 0;
+}
+header > .buttons {
+display: flex;
+
+}
+.email-btn, .linkedin-btn {
+margin: 0 8px;
+padding: 9px 16px 9px 16px;
+border-radius: 6px;
+
+}
+.email-btn {
+display: flex;
+}
+.linkedin-btn {
+background-color: #5093E2;
+color: white;
+}
 
 
-
-
-
-
-
-
-
-
-
-
+button .email-icon {
+    background:url('src/assets/Mail.png') no-repeat;
+    float: left;
+    width: 17px;
+    height: 16px;
+    margin-right: 8px;
+}
+button .linked-icon {
+    background:url('src/assets/linkedin.png') no-repeat;
+    float: left;
+    width: 16px;
+    height: 16px;
+    margin-right: 8px;
+}
 
 
 

@@ -88,24 +88,33 @@ react 17 old way ->
     //export/import normal, means we have many items, which needs curly braces wrapping.. easy!
     //when we have so many items to type, we don't want to type 20.. so we do export ap as obj -
         //this gives an object to use dot notation on any import items, like obj.Header
+/*
+business card project
+
 import Header from "./components/Header.jsx";
 import Content from "./components/content.jsx";
 import Footer from "./components/footer.jsx";
 
 
-function App() {
-
-  return (
-            <div className="container">
+<div className="container">
                 <Header></Header>
                 <Content></Content>
                 <Footer></Footer>
             </div>
+*/
+
+import Airbnb_Navbar from "./components/Airbnb_Navbar.jsx";
+import Airbnb_Content from "./components/Airbnb_content.jsx";
+
+function App() {
+
+  return (
+            <div className={"container"}>
+              <Airbnb_Navbar></Airbnb_Navbar>
+                <Airbnb_Content></Airbnb_Content>
+            </div>
   )
 }
-
-
-
 
 
 

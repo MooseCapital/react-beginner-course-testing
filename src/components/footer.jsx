@@ -1,3 +1,4 @@
+/*
 function Footer() {
     return (
         <footer>
@@ -8,4 +9,4 @@ function Footer() {
         </footer>
     )
 }
-export default Footer
+export default Footer*/

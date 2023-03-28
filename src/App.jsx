@@ -102,17 +102,81 @@ import Footer from "./components/footer.jsx";
                 <Footer></Footer>
             </div>
 */
+/*
+Props:
+we want o make components like imdb has a format for new movies, so it can simply add them to the website fast from dynamic content.
+    a developer doesn't have to individually add each movie, they already have the format, these are called props in react
+
+    anything after the arrows, enter jsx mode like html. to input javascript, react lets us input it with {  } ,
+    inside braces, were back to javascript mode
+
+    //best practice to hold things in variables, then input var in the braces in jsx below, rather than calculate inside braces
+
+    when we simply place a contact-card into our app multiple times, we are just copying the data 4 times, we want the same format.. with
+        4 different sets of data. like a function that returns 1 + 2, always returns 3. it's entirely useless for a format, so we use paramaters, arguments..
+
+    in HTML we can't just makeup a random attribute and add it, but with react, we can make our own custom attribute used, to pass in arguments to our component
+        these look the same as attributes we know from HTML, in react these are properties, called Props
+
+   **Prop names can be whatever we want, they are simply attribute like items, that work like an argument in a function
+        remember, we need a parameter, so in the actual component () -> we put a word to hold all our arguments like (props)
+        the parameter is actually an object, that holds all our arguments, so we access them like props.img  etc..
+        since jsx is html and javascript through react, we pass in argument, then put the js code in braces {props.name}
+        now we have an easily replicable component, we simply pass the argument through props when we render it
+
+*  */
+
+function TestJsx() {
+ let hours = new Date().getHours()
+    return (
+        <div> It is {hours} o'clock</div>
+    )
+}
+//prop testing below
+    import Contact_Card from "./components/Contact_Card.jsx";
+
+/*  airbnb file
 
 import Airbnb_Navbar from "./components/Airbnb_Navbar.jsx";
 import Airbnb_Content from "./components/Airbnb_content.jsx";
+import Airbnb_Card from "./components/Airbnb_Card.jsx";
 
-function App() {
-
-  return (
             <div className={"container"}>
               <Airbnb_Navbar></Airbnb_Navbar>
                 <Airbnb_Content></Airbnb_Content>
+                <Airbnb_Card></Airbnb_Card>
             </div>
+            */
+function App() {
+
+  return (
+           <div className="contacts">
+               <Contact_Card
+               img="assets-proplearn/cat1.png"
+               name="Mr. Whiskerson"
+               phone="(501) 3843-1920"
+               email="mitten1@napmail.com"
+               />
+                <Contact_Card
+               img="assets-proplearn/cat2.jpg"
+               name="Mr. Meowtians"
+               phone="(501) 3383-8839"
+               email="meowerson@napmail.com"
+               />
+               <Contact_Card
+               img="assets-proplearn/cat3.jpg"
+               name="Ms. Mittens"
+               phone="(501) 1933-8830"
+               email="mittens90@napmail.com"
+               />
+               <Contact_Card
+               img="assets-proplearn/cat4.png"
+               name="Mr. Fluff"
+               phone="(501) 9042-3012"
+               email="Fluff1@meowmail.com"
+               />
+
+           </div>
   )
 }
 

@@ -124,6 +124,14 @@ we want o make components like imdb has a format for new movies, so it can simpl
         since jsx is html and javascript through react, we pass in argument, then put the js code in braces {props.name}
         now we have an easily replicable component, we simply pass the argument through props when we render it
 
+        we can NOT add props to a native DOM element passed in JSX like <div blahblah="hi"> , remember props -> attribute like
+            are for our CUSTOM components, so when react renders the JSX div, it sees it is native HTML and sees our prop on it, it knows the built in element
+                does not have an attribute by that name.. and fails
+
+        Destructuring -> in react we saw we have an object like parameter in our component, to handle prop arguments passed in..
+            we can use destructuring so instead of passing in (props) -> then accessing it with dot donation inside {props.img}
+            -> we destructure the prop object from the start, so we don't need dot notation when passing in the prop to our component.
+            -> it might be preferred for us to always use (props) then destructure later with const {img,name,phone,email} = props; in case something is misspelled  or missing
 *  */
 
 function TestJsx() {

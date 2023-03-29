@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import reactLogo from './assets/react.svg'
 import './App.css'
+import Jokes from "./components/jokes.jsx";
 
 /*
 
@@ -64,7 +65,7 @@ react 17 old way ->
 
 //Components -> reusable function that returns our JSX
     // Pascal case always -> capitalize ALL letters
-    //when calling the component function, we put it in < /> like html, like like normal function()
+    //when calling the component function, we put it in < jokes=/ > like html, like like normal function()
 
 
 //Parent -> Child components - it is not ideal to stuff all our markup in a single component like above
@@ -132,16 +133,107 @@ we want o make components like imdb has a format for new movies, so it can simpl
             we can use destructuring so instead of passing in (props) -> then accessing it with dot donation inside {props.img}
             -> we destructure the prop object from the start, so we don't need dot notation when passing in the prop to our component.
             -> it might be preferred for us to always use (props) then destructure later with const {img,name,phone,email} = props; in case something is misspelled  or missing
+
+        conditional rendering -> jokes.jsx -> we see that we may not always want to render the joke if we don't have it, and only the punchline
+            if we don't put conditional, then we render an empty element.. we don't want this, so inside the components return we put
+            {props.joke && <h2>setup:{props.joke} </h2>}  -> so we see now, we can put even the jsx inside brackets, we remember && looks for
+            the first falsy value, to return second if both are true, so it looks if props.joke even exist, if so then we go render h2
+            -> big reminder that we can not only put params for props in our { } inside our jsx, but we can wrap the entire jsx in braces {}
+            -> to make conditional to even render the jsx at all
+
+        Array.map() -> creates a new array, does not affect original array -> runs a function for each item in the array, skips blanks
+            -> new array has every item, that we ran the function on, so we could change it. like forEach, or a for loop
+            -> whatever we return, gets placed in the same index, in the new array
+            -> remember .map() is making the for loop for us, to loop over and run the function. so it's declarative. and shortens what we make
+
+        Arrays in React - if we put an array in react, it will know how to loop over it and create elements from it
+                const elements = [<h3>h3</h3>, <h2>h2</h2>, <h1>h1</h1>,<p>hi p</p>]  -> in the app return ( {elements} )
+            -> now we know react auto loops over an array of elements for us and renders our jsx
+            -> we get an array of data [1,2,3] -> now map over it, to put data in elements, [1,2,3].map()
+            -> use map() to get new array that our function ran on the original, now React will place are new arrays elements
+            -> and will render All the elements from an array, so we did NOTHING manually. all easily automated!!
+
+            const JokeElements = JokesData.map((joke) => {
+            return <Jokes setup={joke.setup} punchline={joke.punchline} />
+                ->we are not done yet, since JokeElements is an array of jsx elements we've rendered from Jokes component
+                -> & the JokesData.. remember React gets this array of elements and renders it, JokeElements is NOT a component
+                ->so we dont use  <JokeElements />  like it is a component, we input the array like {JokeElements}
+                ** THIS made our lives MUCH easier, so we have not types out multiple 5+ Joke components, and typed the props for each one!
+                        we are merging data and returning components to the new array, we use this when we want many of the SAME component
+
 *  */
 
-function TestJsx() {
- let hours = new Date().getHours()
+
+import Contact_Card from "./components/Contact_Card.jsx";
+import Airbnb_Navbar from "./components/Airbnb_Navbar.jsx";
+import Airbnb_Content from "./components/Airbnb_content.jsx";
+import Airbnb_Card from "./components/Airbnb_Card.jsx";
+import AirData from "./data/air-data.jsx";
+
+
+
+function App() {
+
+    let AirElements = AirData.map((item) => {
+    return <Airbnb_Card
+            image={item.coverImg}
+            rating={item.stats.rating}
+            reviews={item.stats.reviewCount}
+            location={item.location}
+            description={item.title}
+            price={item.price}
+            key={item.id}
+    />
+})
+
+
     return (
-        <div> It is {hours} o'clock</div>
-    )
+
+            <div className={"container"}>
+                <Airbnb_Navbar></Airbnb_Navbar>
+                <Airbnb_Content></Airbnb_Content>
+                <div className="airbnb-cards">
+                    {AirElements}
+                </div>
+            </div>
+  )
 }
-//prop testing below
-    import Contact_Card from "./components/Contact_Card.jsx";
+/*
+
+<div className={"container"}>
+              <Airbnb_Navbar></Airbnb_Navbar>
+                <Airbnb_Content></Airbnb_Content>
+                <div className="airbnb-cards">
+                    <Airbnb_Card
+                    image={"image 12.png"}
+                    rating={"5.0"}
+                    reviews={6}
+                    location={"USA"}
+                    description={"Life lessons with Katie Zaferes"}
+                    price={136}
+                    />
+                     <Airbnb_Card
+                       /!*  image={}
+                        rating={}
+                        reviews={}
+                        location={}
+                        description={}
+                        price={} *!/
+                    />
+                    <Airbnb_Card
+                       /!*  image={}
+                        rating={}
+                        reviews={}
+                        location={}
+                        description={}
+                        price={} *!/
+                    />
+
+                </div>
+
+            </div>
+
+*/
 
 /*  airbnb file
 
@@ -155,42 +247,5 @@ import Airbnb_Card from "./components/Airbnb_Card.jsx";
                 <Airbnb_Card></Airbnb_Card>
             </div>
             */
-function App() {
-
-  return (
-           <div className="contacts">
-               <Contact_Card
-               img="assets-proplearn/cat1.png"
-               name="Mr. Whiskerson"
-               phone="(501) 3843-1920"
-               email="mitten1@napmail.com"
-               />
-                <Contact_Card
-               img="assets-proplearn/cat2.jpg"
-               name="Mr. Meowtians"
-               phone="(501) 3383-8839"
-               email="meowerson@napmail.com"
-               />
-               <Contact_Card
-               img="assets-proplearn/cat3.jpg"
-               name="Ms. Mittens"
-               phone="(501) 1933-8830"
-               email="mittens90@napmail.com"
-               />
-               <Contact_Card
-               img="assets-proplearn/cat4.png"
-               name="Mr. Fluff"
-               phone="(501) 9042-3012"
-               email="Fluff1@meowmail.com"
-               />
-
-           </div>
-  )
-}
-
-
-
-
-
 
 export default App

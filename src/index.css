@@ -154,13 +154,25 @@ font-weight: 300;
 .airbnb-cards {
 display: flex;
 padding-left: 36px;
-overflow-x: scroll;
+overflow: hidden;
 }
 .card {
 margin-right: 20px;
 height: min-content;
 box-sizing: border-box;
+  position: relative;
 }
+.card-badge {
+
+position: absolute;
+top: 6px;
+left: 6px;
+border-radius: 2px;
+font-weight: 500;
+padding: 5px 7px;
+background-color: white;
+}
+
 .card >img {
 height: 235px;
 width: 176px;

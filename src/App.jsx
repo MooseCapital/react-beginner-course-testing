@@ -134,13 +134,6 @@ we want o make components like imdb has a format for new movies, so it can simpl
             -> we destructure the prop object from the start, so we don't need dot notation when passing in the prop to our component.
             -> it might be preferred for us to always use (props) then destructure later with const {img,name,phone,email} = props; in case something is misspelled  or missing
 
-        conditional rendering -> jokes.jsx -> we see that we may not always want to render the joke if we don't have it, and only the punchline
-            if we don't put conditional, then we render an empty element.. we don't want this, so inside the components return we put
-            {props.joke && <h2>setup:{props.joke} </h2>}  -> so we see now, we can put even the jsx inside brackets, we remember && looks for
-            the first falsy value, to return second if both are true, so it looks if props.joke even exist, if so then we go render h2
-            -> big reminder that we can not only put params for props in our { } inside our jsx, but we can wrap the entire jsx in braces {}
-            -> to make conditional to even render the jsx at all
-
         Array.map() -> creates a new array, does not affect original array -> runs a function for each item in the array, skips blanks
             -> new array has every item, that we ran the function on, so we could change it. like forEach, or a for loop
             -> whatever we return, gets placed in the same index, in the new array
@@ -161,6 +154,20 @@ we want o make components like imdb has a format for new movies, so it can simpl
                 ** THIS made our lives MUCH easier, so we have not types out multiple 5+ Joke components, and typed the props for each one!
                         we are merging data and returning components to the new array, we use this when we want many of the SAME component
 
+        conditional rendering - jokes.jsx -> we see that we may not always want to render the joke if we don't have it, and only the punchline
+            if we don't put conditional, then we render an empty element.. we don't want this, so inside the components return we put
+            {props.joke && <h2>setup:{props.joke} </h2>}  -> so we see now, we can put the jsx inside brackets, we remember && looks for
+                the first falsy value, if we get false before &&  -> it never gets to the second item to render it.. <div></div>
+
+            -> in the component, when we are mapping data, we can check a passed in prop -> see if it meets conditon, then render based off that
+                -> above we, simply check if it exist then render, here we check specific value to render. possibilities are endless!
+
+            {props.openspots === 0 && <div className="card-badge">SOLD OUT</div>}
+                Smart example used for sold out sign -> we pass in open spots from data -> card checks if openspots === 0. then use && again. which
+                will return the 2nd item if the first is true, which renders our sold-out sign
+            -> we go a step further and have 3 situations. online, soldout, both, or neither. so we make badgetext variable to hold the text, and see
+                ->if it's created in the first place in the card component, clearly combining javascript up top, and implanting it in jsx
+                    {badgeText && <div className="card-badge">{badgeText}</div>}
 *  */
 
 
@@ -183,6 +190,7 @@ function App() {
             description={item.title}
             price={item.price}
             key={item.id}
+            openspots={item.openSpots}
     />
 })
 
@@ -235,17 +243,5 @@ function App() {
 
 */
 
-/*  airbnb file
-
-import Airbnb_Navbar from "./components/Airbnb_Navbar.jsx";
-import Airbnb_Content from "./components/Airbnb_content.jsx";
-import Airbnb_Card from "./components/Airbnb_Card.jsx";
-
-            <div className={"container"}>
-              <Airbnb_Navbar></Airbnb_Navbar>
-                <Airbnb_Content></Airbnb_Content>
-                <Airbnb_Card></Airbnb_Card>
-            </div>
-            */
 
 export default App

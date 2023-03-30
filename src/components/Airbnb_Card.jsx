@@ -1,7 +1,14 @@
 export default function Airbnb_Card(props) {
+        let badgeText;
+        if (props.openspots === 0) {
+            badgeText = "SOLD OUT"
+        } else if (props.location === "Online") {
+            badgeText = "ONLINE"
+        }
 
     return (
             <div className="card">
+                {badgeText && <div className="card-badge">{badgeText}</div>}
                 <img src={`assets-airbnb/${props.image}`} alt=""/>
                 <div className="card-content">
                     <div className="rating-line">

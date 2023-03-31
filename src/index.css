@@ -66,28 +66,78 @@ button:focus-visible {
 
 * {
 box-sizing: border-box;
-
+ color: rgba(255, 255, 255, 1);
 }
 
 body {
   margin: 0;
   display: flex;
-background-color: #4C566A;
+background-color: #D8DEE9;
+padding: 10px;
 }
 
 
 .container {
 width: 550px;
-height: min-content;
+height: 710px;
 display: flex;
 flex-direction: column;
 border-radius: 9px;
-background-color: white;
-padding-bottom: 30px;
+padding: 6px;
+background-color: #4C566A;
 }
+
+.container>nav {
+display: flex;
+align-items: center;
+justify-content: center;
+height: 55px;
+background-color: #BF616A;
+border-radius: 9px 9px 0 0;
+/*box-shadow: 0px 2.98256px 7.4564px rgba(0, 0, 0, 0.1);*/
+
+}
+.container > .content {
+background-color: white;
+height: 100%;
+width: 100%;
+padding: 55px 40px 35px 40px;
+
+}
+.content>.test {
+background-color: #BF616A;
+height: 100%;
+width: 100%;
+}
+.travel-image {
+height: 168px;
+width: 126px;
+margin-right:20px;
+}
+
+.container>nav>h3 {
+font-size: 16px;
+font-weight: 500;
+  /*font-family: Inter, serif;*/
+}
+.travel-logo {
+height: 24px;
+width: 24px;
+margin-right: 8px;
+}
+
+
+
+
+
+
+/*content margin 55px top 40px sides 35px bottom*/
+
+
+/*
 .contacts{
-/*width: min-content;*/
-/*height: min-content;*/
+!*width: min-content;*!
+!*height: min-content;*!
 display: flex;
 
 }
@@ -112,16 +162,11 @@ width: 200px;
 border-radius: 6px;
 object-fit: cover;
 }
+*/
 
 
-.container>nav {
-padding: 0 30px;
-display: flex;
-align-items: center;
-height: 70px;
-box-shadow: 0px 2.98256px 7.4564px rgba(0, 0, 0, 0.1);
 
-}
+/*
 
 .logo {
 height: 26px;
@@ -137,7 +182,7 @@ padding: 26px 0 0 36px ;
 width: 396px;
 height: 232px;
 margin: 0 39px;
-/*align-self: center;*/
+!*align-self: center;*!
 
 }
 .content>h1 {
@@ -234,6 +279,7 @@ font-size: 14px;
 color: #918E9B;
 }
 
+*/
 
 
 /*

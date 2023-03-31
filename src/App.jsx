@@ -1,7 +1,6 @@
 import { useState } from 'react'
-import reactLogo from './assets/react.svg'
 import './App.css'
-import Jokes from "./components/jokes.jsx";
+import Travel_Navbar from "./components/Travel_Navbar.jsx";
 
 /*
 
@@ -182,7 +181,26 @@ we want o make components like imdb has a format for new movies, so it can simpl
 *  */
 
 
-import Contact_Card from "./components/Contact_Card.jsx";
+
+
+function App() {
+
+
+
+
+
+    return (
+
+            <div className={"container"}>
+                <Travel_Navbar></Travel_Navbar>
+                <div className="content">
+                    <div className="test"></div>
+                </div>
+            </div>
+  )
+}
+
+/*  Airbnb project
 import Airbnb_Navbar from "./components/Airbnb_Navbar.jsx";
 import Airbnb_Content from "./components/Airbnb_content.jsx";
 import Airbnb_Card from "./components/Airbnb_Card.jsx";
@@ -211,18 +229,6 @@ function App() {
             </div>
   )
 }
-
-/* let AirElements = AirData.map((item) => {
-    return <Airbnb_Card
-            image={item.coverImg}
-            rating={item.stats.rating}
-            reviews={item.stats.reviewCount}
-            location={item.location}
-            description={item.title}
-            price={item.price}
-            key={item.id}
-            openspots={item.openSpots}
-    />
-}) */
+*  */
 
 export default App

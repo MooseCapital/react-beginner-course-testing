@@ -65,7 +65,7 @@ body {
   display: flex;
 background-color: #D8DEE9;
 padding: 10px;
-height: 100vh;
+height: 100%;
 }
 
 
@@ -86,6 +86,7 @@ display: flex;
 align-items: center;
 justify-content: center;
 height: 55px;
+flex-shrink: 0;
 background-color: #BF616A;
 border-radius: 9px 9px 0 0;
 box-shadow: 0px 2.98256px 7.4564px rgba(0, 0, 0, 0.15);
@@ -95,7 +96,7 @@ box-shadow: 0px 2.98256px 7.4564px rgba(0, 0, 0, 0.15);
 height: 100%;
 width: 100%;
 padding: 55px 40px 35px 40px;
-overflow-y: scroll;
+/*overflow-y: scroll;*/
 }
 .content>.test {
 height: 100%;
@@ -116,7 +117,7 @@ margin-right: 8px;
 
 .travel-component {
 display: flex;
-box-shadow: 0px 2.98256px 7.4564px rgba(0, 0, 0, 0.3);
+box-shadow: 0px 2.98256px 7.4564px rgba(0, 0, 0, 0.2);
 border-radius: 6px;
 width: 700px;
 margin-bottom: 30px;
@@ -133,6 +134,7 @@ width: 150px;
 /*margin-right:20px;*/
 border-radius: 6px 0 0 6px;
 object-fit: cover;
+object-position: right;
 
 }
 .coord-logo {

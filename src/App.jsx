@@ -200,9 +200,7 @@ const TravelElements = TravelData.map(item => {
             <div className={"container"}>
                 <Travel_Navbar></Travel_Navbar>
                 <div className="content">
-                    <Travel_Place></Travel_Place>
-                    <Travel_Place></Travel_Place>
-                    <Travel_Place></Travel_Place>
+                    {TravelElements}
                 </div>
             </div>
   )

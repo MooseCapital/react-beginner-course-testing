@@ -168,6 +168,17 @@ we want o make components like imdb has a format for new movies, so it can simpl
             -> we go a step further and have 3 situations. online, soldout, both, or neither. so we make badgetext variable to hold the text, and see
                 ->if it's created in the first place in the card component, clearly combining javascript up top, and implanting it in jsx
                     {badgeText && <div className="card-badge">{badgeText}</div>}
+
+            since we are passing many things to our component, we have many rows of props.. we can simplify this by passing the entire object by
+                item={item}  -> in the component, we would add props.item.img  etc.. so it makes it much shorter on the map() generation side
+                    we must remember since we pass in the entire data object. we use the exact property names from data, not our prop names we made before *coverImg={item.image}
+
+            passing in data #2 -> like above, we used item={item} which gives prop the entire object.  props.item.img  -> but now
+                ->we learned how to use the spread operator, which spreads the data object out, and makes all the props for us with every property in the object.
+                   {...items}  -> now there is no item object passed to the component, it's simply props.coverImage  -> and we didn't have to type it out!!
+
+                ->  we prefer the item={item} way of passing in the data, because we know exactly what's happening and being passed, where {...item} can look odd.
+
 *  */
 
 
@@ -183,14 +194,8 @@ function App() {
 
     let AirElements = AirData.map((item) => {
     return <Airbnb_Card
-            image={item.coverImg}
-            rating={item.stats.rating}
-            reviews={item.stats.reviewCount}
-            location={item.location}
-            description={item.title}
-            price={item.price}
             key={item.id}
-            openspots={item.openSpots}
+            item={item}
     />
 })
 
@@ -206,42 +211,18 @@ function App() {
             </div>
   )
 }
-/*
 
-<div className={"container"}>
-              <Airbnb_Navbar></Airbnb_Navbar>
-                <Airbnb_Content></Airbnb_Content>
-                <div className="airbnb-cards">
-                    <Airbnb_Card
-                    image={"image 12.png"}
-                    rating={"5.0"}
-                    reviews={6}
-                    location={"USA"}
-                    description={"Life lessons with Katie Zaferes"}
-                    price={136}
-                    />
-                     <Airbnb_Card
-                       /!*  image={}
-                        rating={}
-                        reviews={}
-                        location={}
-                        description={}
-                        price={} *!/
-                    />
-                    <Airbnb_Card
-                       /!*  image={}
-                        rating={}
-                        reviews={}
-                        location={}
-                        description={}
-                        price={} *!/
-                    />
-
-                </div>
-
-            </div>
-
-*/
-
+/* let AirElements = AirData.map((item) => {
+    return <Airbnb_Card
+            image={item.coverImg}
+            rating={item.stats.rating}
+            reviews={item.stats.reviewCount}
+            location={item.location}
+            description={item.title}
+            price={item.price}
+            key={item.id}
+            openspots={item.openSpots}
+    />
+}) */
 
 export default App

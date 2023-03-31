@@ -1,7 +1,8 @@
 import { useState } from 'react'
 import './App.css'
 import Travel_Navbar from "./components/Travel_Navbar.jsx";
-
+import Travel_Place from "./components/Travel_Place.jsx";
+import TravelData from "./data/travel-data.jsx";
 /*
 
 react 17 old way ->
@@ -185,7 +186,12 @@ we want o make components like imdb has a format for new movies, so it can simpl
 
 function App() {
 
-
+const TravelElements = TravelData.map(item => {
+    return <Travel_Place
+            item={item}
+            key={item.id}
+    />
+})
 
 
 
@@ -194,7 +200,9 @@ function App() {
             <div className={"container"}>
                 <Travel_Navbar></Travel_Navbar>
                 <div className="content">
-                    <div className="test"></div>
+                    <Travel_Place></Travel_Place>
+                    <Travel_Place></Travel_Place>
+                    <Travel_Place></Travel_Place>
                 </div>
             </div>
   )

@@ -98,21 +98,21 @@ border-radius: 9px 9px 0 0;
 
 }
 .container > .content {
-background-color: white;
 height: 100%;
 width: 100%;
 padding: 55px 40px 35px 40px;
 
 }
 .content>.test {
-background-color: #BF616A;
 height: 100%;
 width: 100%;
+border:1px solid #BF616A;
 }
 .travel-image {
 height: 168px;
 width: 126px;
 margin-right:20px;
+border-radius: 6px;
 }
 
 .container>nav>h3 {

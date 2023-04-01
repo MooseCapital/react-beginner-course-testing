@@ -89,7 +89,7 @@ height: 55px;
 flex-shrink: 0;
 background-color: #BF616A;
 border-radius: 9px 9px 0 0;
-box-shadow: 0px 2.98256px 7.4564px rgba(0, 0, 0, 0.15);
+box-shadow: 0 2.98256px 7.4564px rgba(0, 0, 0, 0.15);
 
 }
 .container > .content {
@@ -117,7 +117,7 @@ margin-right: 8px;
 
 .travel-component {
 display: flex;
-box-shadow: 0px 2.98256px 7.4564px rgba(0, 0, 0, 0.2);
+box-shadow: 0 2.98256px 7.4564px rgba(0, 0, 0, 0.2);
 border-radius: 6px;
 width: 700px;
 margin-bottom: 30px;

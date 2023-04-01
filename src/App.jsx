@@ -192,9 +192,6 @@ const TravelElements = TravelData.map(item => {
             key={item.id}
     />
 })
-
-
-
     return (
 
             <div className={"container"}>
@@ -205,6 +202,32 @@ const TravelElements = TravelData.map(item => {
             </div>
   )
 }
+
+
+
+
+/*
+travel journal project
+
+function App() {
+
+const TravelElements = TravelData.map(item => {
+    return <Travel_Place
+            item={item}
+            key={item.id}
+    />
+})
+    return (
+
+            <div className={"container"}>
+                <Travel_Navbar></Travel_Navbar>
+                <div className="content">
+                    {TravelElements}
+                </div>
+            </div>
+  )
+}
+*/
 
 /*  Airbnb project
 import Airbnb_Navbar from "./components/Airbnb_Navbar.jsx";

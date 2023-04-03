@@ -65,17 +65,110 @@ body {
   display: flex;
 background-color: #D8DEE9;
 padding: 10px;
-height: 100%;
+height: 100vh;
 }
-
 
 .container {
 width: min-content;
 height: 100%;
 display: flex;
 flex-direction: column;
+border-radius: 6px;
+background-color: #4C566A;
+/*box-sizing: border-box;*/
+
+}
+
+.meme-nav {
+display: flex;
+height: 65px;
+width: 600px;
+flex-shrink: 0;
+align-items: center;
+padding: 0 20px;
+background-color: #B48EAD;
+border-radius: 6px 6px 0 0;
+box-shadow: 0 2.98256px 7.4564px rgba(0, 0, 0, 0.15);
+
+}
+.meme-nav >img {
+height: 28px;
+width: auto;
+margin-right: 10px;
+}
+.meme-nav>h3 {
+font-size: 20px;
+font-weight: 500;
+}
+.meme-nav>p {
+font-size: 12px;
+font-weight: 400;
+margin-left: auto;
+margin-right: 20px;
+}
+
+
+.container > .content {
+height: 100%;
+width: 100%;
+padding: 40px 40px 60px 40px;
+/*overflow-y: scroll;*/
+}
+
+.meme-form {
+display: flex;
+flex-direction: column;
+}
+.top-row {
+/*background-color: #5093e2;*/
+display: flex;
+margin-bottom: 20px;
+}
+.top-text,.bottom-text {
+all: unset;
+box-sizing: border-box;
+border: 1px solid rgb(236, 239, 244);
+height: 35px;
+border-radius: 4px;
+width: 100%;
+/*font-size: 20px;*/
+padding-left: 15px;
+}
+.top-text {
+margin-right: 10px;
+}
+.bottom-text {
+margin-left: 10px;
+}
+.top-text:focus,.bottom-text:focus {
+border: 1px solid rgb(236, 239, 244,0.6);
+}
+
+
+.new-meme {
+border: none;
+border-radius: 6px;
+background-color:#B48EAD ;
+padding: 10px;
+width: 100%;
+font-size: 16px;
+font-weight: 500;
+}
+
+
+
+
+
+
+/*
+travel journal project
+.container {
+width: min-content;
+height: 100%;
+display: flex;
+flex-direction: column;
 border-radius: 9px;
-/*padding: 6px;*/
+!*padding: 6px;*!
 background-color: #4C566A;
 box-sizing: border-box;
 
@@ -96,7 +189,7 @@ box-shadow: 0 2.98256px 7.4564px rgba(0, 0, 0, 0.15);
 height: 100%;
 width: 100%;
 padding: 55px 40px 35px 40px;
-/*overflow-y: scroll;*/
+!*overflow-y: scroll;*!
 }
 .content>.test {
 height: 100%;
@@ -107,7 +200,7 @@ width: 100%;
 .container>nav>h3 {
 font-size: 16px;
 font-weight: 500;
-  /*font-family: Inter, serif;*/
+  !*font-family: Inter, serif;*!
 }
 .travel-logo {
 height: 24px;
@@ -121,7 +214,7 @@ box-shadow: 0 2.98256px 7.4564px rgba(0, 0, 0, 0.2);
 border-radius: 6px;
 width: 700px;
 margin-bottom: 30px;
-/*background-color: rgba(255, 255, 255, .3);*/
+!*background-color: rgba(255, 255, 255, .3);*!
 }
 .right-side {
 display: flex;
@@ -131,7 +224,7 @@ padding: 15px 20px;
 .travel-image {
 height: 200px;
 width: 150px;
-/*margin-right:20px;*/
+!*margin-right:20px;*!
 border-radius: 6px 0 0 6px;
 object-fit: cover;
 object-position: right;
@@ -185,10 +278,9 @@ letter-spacing: .3px;
 
 
 
-
+*/
 
 /*content margin 55px top 40px sides 35px bottom*/
-
 
 /*
 .contacts{

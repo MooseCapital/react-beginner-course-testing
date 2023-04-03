@@ -1,8 +1,6 @@
 import { useState } from 'react'
 import './App.css'
-import Travel_Navbar from "./components/Travel_Navbar.jsx";
-import Travel_Place from "./components/Travel_Place.jsx";
-import TravelData from "./data/travel-data.jsx";
+
 /*
 
 react 17 old way ->
@@ -179,25 +177,36 @@ we want o make components like imdb has a format for new movies, so it can simpl
 
                 ->  we prefer the item={item} way of passing in the data, because we know exactly what's happening and being passed, where {...item} can look odd.
 
+
+            Static web pages - read only, no changes to the data. We've only made static so far. ex. blogs, recipes
+            Dynamic web apps - read-write: ability to change data.
+                    Interactive, displays your data. Ex. bank website, Airbnb
+
+            What we'll learn - Event listeners, state, conditional rendering(we did this with &&), Forms, side effects
+
+
+
 *  */
+
+import MemeGen_Navbar from "./components/MemeGen_Navbar.jsx";
+import Meme from "./components/MemeGen_Meme.jsx";
+
+
 
 
 
 
 function App() {
 
-const TravelElements = TravelData.map(item => {
-    return <Travel_Place
-            item={item}
-            key={item.id}
-    />
-})
+
+
     return (
 
             <div className={"container"}>
-                <Travel_Navbar></Travel_Navbar>
+                <MemeGen_Navbar />
                 <div className="content">
-                    {TravelElements}
+                    <Meme />
+
                 </div>
             </div>
   )

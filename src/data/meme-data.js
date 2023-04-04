@@ -645,7 +645,7 @@ export default {
             {
                 "id": "183518946",
                 "name": "Blank Transparent Square",
-                "url": "https://i.imgflip.com/319g4i.png",
+                "url": "https://i.imgur.com/NR5XEM1.jpg",
                 "width": 1000,
                 "height": 1000,
                 "box_count": 2

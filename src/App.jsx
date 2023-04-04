@@ -208,10 +208,31 @@ we want o make components like imdb has a format for new movies, so it can simpl
                React.useState()  -> is how we use state and re-render an element that has already passed in a state variable, with a new value
                         let myState = React.useState("yes")  -> myState returns an array with 2 items ["hello", f() ]
                         instead of accessing our state with { myState[0] } -> inside our component element
-                        we can destructure and try ->  const [myState , fun] =  React.useState("yes")   -> now we access it by simply {myState}
+                        we can destructure and try ->  const [myState , func] =  React.useState("yes")   -> now we access it by simply {myState}
                         ** when destructuring array -> we can call the var whatever we want -> const [whateverCat, func] = React.useState()
                             -> an objects destructure has to MATCH prop names, we are fortunate, it's array so we get free reign to name!
 
+                        we can NOT simply change *myState* variable made from destructuring useState() like in normal JS. we must use the function created from useState
+                            -> that's the 2nd item in the destructure, func above -> controls changing myState
+                        **Naming convention for the function is set(varNameHere) -> so we would use [result, setResult]
+                        -> running our function setResult() changes the states value, which we want after some action
+                        -> simply running setResult("no") on click will change wherever {result} is input.. and clicking again, will ALWAYS give us "no"
+                                -> which is why we will put dynamic data for state, instead of a simple string here for onClick
+                        *Counter example -> button has up 1 and down 1.. function for up 1 has setResult(counter + 1) -> we simply see the dynamic value over a simple "no"
+                                -> setResult(counter + 1) will set anywhere we have placed {result} in the components, return elements, and update it!!
+                             *** We will NEVER modify the state variable directly, setResult(count = count + 1) or (count++) WRONG** this modifies the state variable
+                                    -> where as setResult(count + 1) never overrides it, it simply adds one to it. which is the point of the state function, modifies state but not the main holder
+
+                            Best practice -> if we ever need old value in state to determine new value, we pass a callback function.. setResult(count + 1) -> NOT best practice..
+                                    setResult((value) => {    -> react will always pass our old state value as the variable, which lets us use it without modifying it safely!
+                                        return value + 1;
+                                    })
+                                -> this best practice makes sense, and is easy if we make it a habit over simply setResult(count + 1) .. we can always shorten with arrow functions!
+                                    setResult(prevCount => prevCount + 1)   -> no parenthesis needed on one param and no return needed for one liner, sweet!
+                                            -> using naming convention prev(variable name)  lets us know, it's the previous value
+
+                **REMINDER - React.useState() MUST be created in the main component, no inside an events function nested in the component..
+                        -> BUT of course the state change function can be inside the event function.. that's the point, to change state! but not set it there initially
 *  */
 
 import MemeGen_Navbar from "./components/MemeGen_Navbar.jsx";

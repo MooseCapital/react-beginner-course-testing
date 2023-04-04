@@ -184,7 +184,33 @@ we want o make components like imdb has a format for new movies, so it can simpl
 
             What we'll learn - Event listeners, state, conditional rendering(we did this with &&), Forms, side effects
 
+            Event listeners - in js, we used addEventListener, or we could use onclick directly in html.. for React we use the HTML way, in camelCase style
+                HTML -> onclick="function() {  }"
+                React -> onClick={function() {  } }   - since it is react, we can input js inside any brackets, so we would write the function outside, and simply write the
+                    function name inside the brackets for simplicity  -> onClick={clickerFunction }
 
+            -> the problem is after our event, we want to use a value onClick, etc.. then pass that value to another element
+                -> or add a new element on some event, BUT react only renders app once, how do we get it to use our value and render again?
+
+
+
+            STATE : make it so react watches for a change in our values, ex variables, then like onClick, our variable has changed,
+                and we want it reflected in the DOM, React handles that for us with state.
+
+            State vs props - we should never overide/change props we pass through to a component, like we wouldn't change a parameter, after passing in an argument..
+                    Ex.  props.image = "a" ** NO, we have written over the value passed in..
+                BUT it is completely fine to Change the VALUES PASSED in to the component, like props itself, it's not fine when we override it after it's passed in
+                   -> within the body of the function, we should never change the props
+
+            State - values defined WITHIN the component, and should be changing. Which React will watch for.. unlike props -> defined outside the component
+                    -> anytime a component has values that will change and should be saved/displayed we will likely use state
+
+               React.useState()  -> is how we use state and re-render an element that has already passed in a state variable, with a new value
+                        let myState = React.useState("yes")  -> myState returns an array with 2 items ["hello", f() ]
+                        instead of accessing our state with { myState[0] } -> inside our component element
+                        we can destructure and try ->  const [myState , fun] =  React.useState("yes")   -> now we access it by simply {myState}
+                        ** when destructuring array -> we can call the var whatever we want -> const [whateverCat, func] = React.useState()
+                            -> an objects destructure has to MATCH prop names, we are fortunate, it's array so we get free reign to name!
 
 *  */
 

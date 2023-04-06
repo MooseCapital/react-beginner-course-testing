@@ -205,6 +205,9 @@ we want o make components like imdb has a format for new movies, so it can simpl
             State - values defined WITHIN the component, and should be changing. Which React will watch for.. unlike props -> defined outside the component
                     -> anytime a component has values that will change and should be saved/displayed we will likely use state
 
+                **REMINDER - React.useState() MUST be created in the main component, no inside an events function nested in the component..
+                        -> BUT of course the state change function can be inside the event function.. that's the point, to change state! but not set it there initially
+
                React.useState()  -> is how we use state and re-render an element that has already passed in a state variable, with a new value
                         let myState = React.useState("yes")  -> myState returns an array with 2 items ["hello", f() ]
                         instead of accessing our state with { myState[0] } -> inside our component element
@@ -223,16 +226,55 @@ we want o make components like imdb has a format for new movies, so it can simpl
                              *** We will NEVER modify the state variable directly, setResult(count = count + 1) or (count++) WRONG** this modifies the state variable
                                     -> where as setResult(count + 1) never overrides it, it simply adds one to it. which is the point of the state function, modifies state but not the main holder
 
-                            Best practice -> if we ever need old value in state to determine new value, we pass a callback function.. setResult(count + 1) -> NOT best practice..
-                                    setResult((value) => {    -> react will always pass our old state value as the variable, which lets us use it without modifying it safely!
-                                        return value + 1;
-                                    })
-                                -> this best practice makes sense, and is easy if we make it a habit over simply setResult(count + 1) .. we can always shorten with arrow functions!
-                                    setResult(prevCount => prevCount + 1)   -> no parenthesis needed on one param and no return needed for one liner, sweet!
-                                            -> using naming convention prev(variable name)  lets us know, it's the previous value
+                        Best practice -> if we ever need old value in state to determine new value, we pass a callback function.. setResult(count + 1) -> NOT best practice..
+                                setResult((value) => {    -> react will always pass our old state value as the variable, which lets us use it without modifying it safely!
+                                    return value + 1;
+                                })
+                            -> this best practice makes sense, and is easy if we make it a habit over simply setResult(count + 1) .. we can always shorten with arrow functions!
+                                setResult(prevCount => prevCount + 1)   -> no parenthesis needed on one param and no return needed for one liner, sweet!
+                                        -> using naming convention prev(variable-name)  lets us know, it's the previous value
+                                        -> when using the previous value in state, to determine the new value, always use callback function
+                                                setImage(prevImage => prevImage + 1) etc.. it would be good practice to always use function instead of simple value..
 
-                **REMINDER - React.useState() MUST be created in the main component, no inside an events function nested in the component..
-                        -> BUT of course the state change function can be inside the event function.. that's the point, to change state! but not set it there initially
+                        Ternary operator refresh:  let answer = isGoingOut ? "yes" : "no" ;
+                            -> if we return true before the ? -> then answer = "yes", if false, then answer = "no" -> we will learn how to use this in components like conditionals
+
+                            <h1>{isGoingOut ? "yes": "no"}</h1>  -> instead of variable and if statements.. the component renders and checks the ternary -> if true then
+                                    -> the innertext for h1 will be "yes", if false then no
+                            -> *** if we have a simple boolean true or false, and want the opposite, there's no need for ternary, simply do !varName -> gets opposite simply!
+                            This is a state switch, from true to false setGoingOut(prev => !prev) -> gives the opposite, now {goingOut ? "yes" : "no"} in jsx gives us option
+                                to switch between easily
+
+                 Arrays in State  When using state and an array as the original data, remember we want to return the same array, so arr.push() is out, because that MODIFIES it
+            Spread operator  -> also that only returns the newest item pushed.. we must return a new array, BUT with the spread operator to get all our old items out
+                            ->   setThingsArray(prevThingsArray => return [...prevThingsArray, `Thing ${prevThingsArray.length + 1}`]
+
+                  Objects in State ->  const [contact, setContact] = React.useState({ firstName: "John",  lastName: "Doe",  })
+                             -> we access like an object, but with the state variable holder..  {contact.firstName} -> to use it like we did a simple string earlier
+
+                             *Setting new props in the state, with object as value. We want to KEEP all old values while writing over some we want changed..
+                                -> we spread in all old values, and the value we change overrides the previous props value, remember if we don't spread operator it in, we
+                                    -> would only return the props we write in.. we want to keep all the old data!!
+                                 setContact(prev => {
+                                    return {
+                                        ...contact,
+                                        contact.firstName: "gary"
+
+                                    }
+                                 })
+
+
+                 props and state together: we can make a component separate -> then pass our state holder to it through a prop name.. remember props. -> we would use props.state
+                    -> now we wouldnt get very complicated unless we need the separation, but we can easily pass it in.. now when the state changes, the main app where state
+                        -> was created gets re-rendered, AND our child component, that passed state as a prop get re-rendered,
+                            <Count number={state} />  -> inside Count component we access it by -> props.number -> which equals the states value
+
+
+            *passing state through props and event functions through components, on the parent component
+                    <star onClick={toggle} >  WRONG -> we must remember we are making CUSTOM props, star is not built in, so we can't pass an event to it, onClick here represents
+                            -> a custom prop, so we go to the star component directly, then add onClick={props.handleCLick}  -> we passed in the function through a prop though!
+                   passing function for event to a component through props -> <star handleClick={toggleStar} >   -> handleClick is an easy convention, so we don't remember the function Name
+
 *  */
 
 import MemeGen_Navbar from "./components/MemeGen_Navbar.jsx";

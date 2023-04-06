@@ -644,7 +644,7 @@ export default {
             },
             {
                 "id": "183518946",
-                "name": "Blank Transparent Square",
+                "name": "Gigachad computer",
                 "url": "https://i.imgur.com/NR5XEM1.jpg",
                 "width": 1000,
                 "height": 1000,

@@ -10,7 +10,7 @@ function Meme() {
     const [meme, setMeme] = React.useState({
     topText: "",
     bottomText: "",
-    randomImage: "https://i.imgflip.com/64ku.jpg"
+    randomImage: ""
     })
 
 

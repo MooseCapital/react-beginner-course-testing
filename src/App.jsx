@@ -275,6 +275,60 @@ we want o make components like imdb has a format for new movies, so it can simpl
                             -> a custom prop, so we go to the star component directly, then add onClick={props.handleCLick}  -> we passed in the function through a prop though!
                    passing function for event to a component through props -> <star handleClick={toggleStar} >   -> handleClick is an easy convention, so we don't remember the function Name
 
+
+           state and child/parent relationships - above we learn how to pass in state and even a function call through props to a child..
+            -> in react sibling elements don't even know about one another, a nav doesn't contain anything about a body.. so it CAN'T pass state to it
+            ->state MUST be passed through a parent with props to child Components
+            -> when state must be in the Grandparent element, then passed twice. it gets complicated.. this is called context -> and can be managed by redux, a 3rd party state manager
+            -> best pracice, keep state as local as we can -> meaning, if a child element only needs a state, don't put it way up in it's grandparent!
+
+            *style - like in html, as an attribute, we can use style="background-color: white" -> to insert any css in html element
+                    -> we can do the same with react, BUT remember how we insert javascript as well.. it means we can change that style like state
+                    ->dynamically, where as in normal html, style is always what we set, and we would need native js to change it
+                    -> in javascript, we dont use background-color like css, we use backgroundColor, because in object names, we haven o dash -  ->
+                    -> js styles.backgroundColor is an object, so in react we access it by an object as well
+                        -> style={ {backgroundColor: red}  }  -> see how we have to edit it like an object, vs html simply need style=""  string
+
+                    -> we can simply set styles ={ backgroundColor: red}   ->inside the element in jsx, we write in style={styles}  for simplicity..
+
+                    ->dynamic styles are useful, what if we pass in darkmode="true" to our main app, and have it change!
+                        -> {backgroundColor: props.darkmode ? "black" : "white";  }
+
+            *local state - we see below, we render our Box components, and want to pass in dynamic data from [boxes] array, but use state for it..
+                -> we want to change the value of our "on" prop to true or false.. but the child component "Box" does not have access to setSquares.
+                -> inside the child component, we simply make a copy state of the value we want to use, since we have no access to the parents state for change
+
+                const [boxOnOrOff, setBoxOnOrOff] = React.useState(props.on)   -> now Box can use setBox to change props.on, since our state is its
+                        props.on initial value -> we simply copied a states value to a child, since the parents state setter can't be passed down
+
+                        const [squares, setSquares] = React.useState(boxes);
+                            const squareElements = squares.map(item => {
+                                return <Box on={item.on} key={item.id}></Box>
+                            })
+
+            ** ^^ if we find ourself passing in a specific state datapoint through the parent, and need to create a new state to hold it in the child..
+                -> There is probably a better way, like simply having it in the parent only, and controlling it there
+
+                When you create state that is initialized by incoming props to a child component:  Derived state - we DONT need it!
+                    local box state has different value that parent state, so we have multiple versions of truth = bad
+
+            We must hold the state in the parent, then pass it through components, by passing the function that is called onClick={toggle}
+        **  Remember we CANNNOT pass values through -> onClick={toggle()} WRONG  -> so we use a callback function that CALLS the event function
+            ->  and we need a unique id to match up our individual component with its state's value in the data array, so we pass a unique id to component
+             ->key prop is for component only, make id with same value as key prop for unique matcher!!
+             ->  onClick={()=> props.toggle(props.id)}  -> we have event function inside function and get to pass a unique id! and our state is still in parent
+        ** inside the onClick={toggle} function, in the parent toggle function, we run the original setSquares, and match id passed through prop
+                setSquares(prevSquares => {                                      setSquares(prevSquares => {
+                       return prevSquares.map((square) => {                         return prevSquares.map((square) => {
+                            if (square.id === id) {                   -->             return square.id === id ? {...square, on: !square.on} : {...square}
+                                return {...square, on: !square.on}    -->          })
+                            } else {                                  -->         })
+                                return {...square}
+                            }
+                       })
+                    })
+            when we have a two option if statement like above, we simply use a ternary!
+
 *  */
 
 import MemeGen_Navbar from "./components/MemeGen_Navbar.jsx";

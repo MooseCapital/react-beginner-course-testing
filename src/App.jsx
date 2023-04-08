@@ -363,12 +363,17 @@ Forms ** - when using forms in react, we can make a separate state for items up 
 
     **With Many inputs - we hold in a single state, with value of an object, that we set its properties to our inputs. and have a single handleChange function
        -> remember the "name" property from using labels in js, we use them here to identify the unique input, to match it with its object property
-
+            -> we access that name property by console.log(event.target.name)
         const [formData, setFormData] = React.useState(
             {firstName: "", lastName: ""});
 
             function handleChange(event) {
-                setFormData(event.target.value)
+                setFormData(prevForm => {
+                    return {
+                        ...prevForm,
+                        [event.target.name]: event.target.value          -> we must wrap event.target.name in brackets, so it renders a computed string as property
+                    }
+                })
             }
 
             <input
@@ -384,6 +389,88 @@ Forms ** - when using forms in react, we can make a separate state for items up 
                 name={"lastName"}
            />
 
+        -> Currently our html onChange -> is driving our react state, and it simply mirrors its value, where as we want react to be driving the value of state
+            -> so we need a value property.. value={state variable}  -> or if were using multiple with object data.. value={formData.firstName}
+    
+            -> visually there is no difference, but conceptually, html is no longer setting value, react now runs the setState function, which re-renders our elements
+                -> which sets the value property in the inputs to match the data in it's current state.
+            -> simply remember, these are CONTROLLED components in react, react does not like uncontrolled components, and we simply set value={current-state}
+
+    
+    Text Area -  in html text area looks like this, with open/close tags <textarea name="" id="" cols="30" rows="10"></textarea>
+        -> unlike <input/> that is self closing, the text areas value is between the two tags.. BUT in React, text area is self closing also!
+        <textarea/>  -> this means no text between, it works like input, to set value={state}
+        -> there is no type="text"  because textarea is already text only
+
+            <textarea
+                placeholder={"comments"}
+                onChange={handleChange}
+                name={"comments"}
+                value={formData.comments}
+           />
+
+    Checkbox - is really <input/> element with type="checkbox" -> remember labels? we can wrap our checkbox input inbetween the labels or separate them
+            -> when separated, we must make sure they are connected by using htmlFor="idName"  attribute
+            -> checkbox has no string, so we only use boolean. it has no value, but simply check={}
+            -> in the handleChange function, we have been using [event.target.name]: event.target.value -> but now we need to handle checked, NOT value
+            -> we destructure to get these values out, now we can make some changes  const {name, value, check} = event.target;
+            -> we learned, when not using all inputs that need value only, like checked, we must use syntax below to determine what to use, otherwise use above
+             setFormData(prevForm => {
+                const {name, value, type, checked} = event.target;
+                return {
+                    ...prevForm,
+                    [name] : type === "checkbox" ? checked : value,
+
+                }
+            })
+
+    Radio input - radio buttons work much like checkbox but only 1 can be selected in a fieldset, since we have multiple, we must set its value AND use a special checked
+        -> property, because we have more than 2 options, so we need more than true/false.
+            <input
+                type="radio"
+                id="unemployed"
+                name={"employment"}
+                value={"unemployed"}
+                onChange={handleChange}
+                checked={formData.employment === "unemployed"}
+            />
+            <label htmlFor="unemployed">Unemployed</label>
+
+        ->when selecting a check, we run onChange -> this updates state which sets employment: "unemployed" etc..
+            -> which re-renders the dom, now react in the checked={formData.employment === "unemployed"} sees the state we just updated, which sets checked=true/false
+            -> for the radio we just selected, now react is driving the values, and no longer html
+            ->The checked property sets or returns the checked state of a radio button.
+            -> radio buttons are the most complex because it combines checked and value, but it only gets easier from here!
+
+    Select Input - since we default the favColor prop to blank string in state "", we need a selection with that blank value, that we see is -- choose --
+            <select
+                   name="favColor"
+                   id="favColor"
+                   onChange={handleChange}
+                   value={formData.favColor}
+               >
+                   <option value="">-- Choose --</option>
+                   <option value="red">red</option>
+                   <option value="blue">blue</option>
+                   <option value="green">green</option>
+                   <option value="yellow">yellow</option>
+               </select>
+
+     Submitting Form - <input type="submit" value="send it in" />  or we can simply use a normal button
+         ** Buttons in a form will default to type="submit" -> if we want a button to NOT submit, we would set type="button"
+            -> clicking the button will trigger the form elements onSubmit={} event handler-> instead of type="post" action="php file"
+            -> in this handler function, we want to event.preventDefault(); -> in the old days, this clears the form because we would use actions in js
+            -> with event.default() it wont re-render our page and reset our state
+            -> since we have been updating our state all along, we have our form data, and would easily be able to pass that to an api by someAPI(formData)
+                 <form className={"form1"} onSubmit={handleSubmit}>
+                function handleSubmit(event) {
+                    event.preventDefault();
+                    console.log(formData);
+                }
+
+
+
+
 *  */
 
 import MemeGen_Navbar from "./components/MemeGen_Navbar.jsx";
@@ -393,31 +480,118 @@ import Joke from "./components/jokes.jsx";
 
 
 
-
 function App() {
 
     const [formData, setFormData] = React.useState(
-    {firstName: "", lastName: ""});
+    {firstName: "", lastName: "", email: "", comments: "",
+    isFriendly: false, employment: "", favColor: "" });
 
     function handleChange(event) {
-        setFormData(event.target.value)
+        setFormData(prevForm => {
+            const {name, value, type, checked} = event.target;
+            return {
+                ...prevForm,
+                [name] : type === "checkbox" ? checked : value,
+
+            }
+        })
     }
 
-    console.log(formData);
+
+    function handleSubmit(event) {
+        event.preventDefault();
+        console.log(formData);
+    }
+
+
     return (
-       <form>
+       <form className={"form1"} onSubmit={handleSubmit}>
             <input
                 type="text"
                 placeholder="First Name"
                 onChange={handleChange}
                 name={"firstName"}
+                value={formData.firstName}
             />
            <input
                 type="text"
                 placeholder={"Last Name"}
                 onChange={handleChange}
                 name={"lastName"}
+                value={formData.lastName}
            />
+           <input
+                type="email"
+                placeholder={"Email"}
+                onChange={handleChange}
+                name={"email"}
+                value={formData.email}
+           />
+           <textarea
+                placeholder={"comments"}
+                onChange={handleChange}
+                name={"comments"}
+                value={formData.comments}
+           />
+           <input
+               type="checkbox"
+               id="isFriendly"
+               name={"isFriendly"}
+               checked={formData.isFriendly}
+               onChange={handleChange}
+           />
+           <label htmlFor="isFriendly">Are you friendly?</label>
+           <fieldset>
+                <legend>Current employment status</legend>
+
+                <input
+                    type="radio"
+                    id="unemployed"
+                    name={"employment"}
+                    value={"unemployed"}
+                    onChange={handleChange}
+                    checked={formData.employment === "unemployed"}
+                />
+                <label htmlFor="unemployed">Unemployed</label>
+                <br />
+
+                <input
+                    type="radio"
+                    id="part-time"
+                    name={"employment"}
+                    value={"part-time"}
+                    onChange={handleChange}
+                    checked={formData.employment === "part-time"}
+                />
+                <label htmlFor="part-time">Part-time</label>
+                <br />
+
+                <input
+                    type="radio"
+                    id="full-time"
+                    name={"employment"}
+                    value={"full-time"}
+                    checked={formData.employment === "full-time"}
+                    onChange={handleChange}
+                />
+                <label htmlFor="full-time">Full-time</label>
+                <br />
+
+            </fieldset>
+           <select
+               name="favColor"
+               id="favColor"
+               onChange={handleChange}
+               value={formData.favColor}
+           >
+               <option value="">-- Choose --</option>
+               <option value="red">red</option>
+               <option value="blue">blue</option>
+               <option value="green">green</option>
+               <option value="yellow">yellow</option>
+
+           </select>
+            <button>send it in</button>
         </form>
     )
 }

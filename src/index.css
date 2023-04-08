@@ -33,11 +33,14 @@ button {
 
   font-family: inherit;
   background-color: white;
+  border-radius: 2px;
+  padding: 5px 10px;
   cursor: pointer;
-  transition: border-color 0.25s;
+  margin: 3px;
+  /*transition: border-color 0.25s;*/
 }
 button:hover {
-  border-color: #646cff;
+  /*border-color: #646cff;*/
 }
 button:focus,
 button:focus-visible {
@@ -57,7 +60,7 @@ button:focus-visible {
 
 * {
 box-sizing: border-box;
- color: rgba(255, 255, 255, 1);
+ color: black;
 }
 
 body {
@@ -76,7 +79,7 @@ flex-direction: column;
 border-radius: 6px;
 background-color: #4C566A;
 /*box-sizing: border-box;*/
-
+padding: 5px;
 }
 
 .meme-nav {
@@ -142,8 +145,10 @@ text-indent: 8px;
 
 }
 input::placeholder {
-color: rgb(236, 239, 244);
-opacity: 0.6;
+/*color: rgb(236, 239, 244);*/
+/*opacity: 0.6;*/
+color: black;
+opacity: 1;
 }
 .top-text {
 margin-right: 10px;
@@ -177,7 +182,19 @@ margin-left: auto;
 }
 
 
+/* box testing
 
+.box {
+margin: 4px;
+border: 2px solid black;
+height: 50px;
+width: 50px;
+}
+.box:hover {
+background-color: rgb(000,000,000,0.2);
+}
+
+*/
 
 /*
 travel journal project

@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import React, { useState } from 'react'
 import './App.css'
 
 /*
@@ -317,46 +317,154 @@ we want o make components like imdb has a format for new movies, so it can simpl
             ->  and we need a unique id to match up our individual component with its state's value in the data array, so we pass a unique id to component
              ->key prop is for component only, make id with same value as key prop for unique matcher!!
              ->  onClick={()=> props.toggle(props.id)}  -> we have event function inside function and get to pass a unique id! and our state is still in parent
-        ** inside the onClick={toggle} function, in the parent toggle function, we run the original setSquares, and match id passed through prop
-                setSquares(prevSquares => {                                      setSquares(prevSquares => {
-                       return prevSquares.map((square) => {                         return prevSquares.map((square) => {
-                            if (square.id === id) {                   -->             return square.id === id ? {...square, on: !square.on} : {...square}
-                                return {...square, on: !square.on}    -->          })
-                            } else {                                  -->         })
-                                return {...square}
-                            }
-                       })
-                    })
-            when we have a two option if statement like above, we simply use a ternary!
+            ** inside the onClick={toggle} function, in the parent toggle function, we run the original setSquares, and match id passed through prop
+
+                        setSquares(prevSquares => {                                      setSquares(prevSquares => {
+                               return prevSquares.map((square) => {                         return prevSquares.map((square) => {
+                                    if (square.id === id) {                   -->             return square.id === id ? {...square, on: !square.on} : square
+                                        return {...square, on: !square.on}    -->          })
+                                    } else {                                  -->         })
+                                        return {...square}
+                                    }
+                               })
+                            })
+                    when we have a two option if statement like above, we simply use a ternary!
+
+                    Instead of passing in id as a prop and changing     onClick={toggle} ->  onClick={()=> props.toggle(props.id)}
+                            we simply pass in the id from the component at the parent level   toggle={() => toggle(item.id)}
+
+
+Conditional rendering -  { isShown && <p>{props.punchline}</p>}   -> p element will not exist unless isShown is true
+        && -> double ampersands -> checks for first falsy value since both need to be true.. meaning, if isShown is false, then it stops and never
+                -> gets around to <p> so it never renders it.
+                {messages.length > 0 && <h1>You have {messages.length} unread messages!</h1>}
+
+        Most of the time condition rendering will be either && -> or ternary where we have 2 options to show -> if we need more, then chain if -> else if..
+                    and place var in braces
+                <button onClick={toggleShown}>{isShown ? "Hide" : "Show"} Punchline</button>
+
+Forms ** - when using forms in react, we can make a separate state for items up to 4 separate inputs.
+    this is good practice because once we get more than 4 or so, it becomes difficult to keep making states
+    so we would then hold the inputs values in a single state object.
+
+    ** with few inputs only
+        const [firstName, setFirstName] = React.useState("")
+         const [lastName, setLastName] = React.useState("")
+
+    ->  inside the inputs, we don't need to make a separate function, but simply inside the onChange={}
+        -> here we simply replace firstName state -> using setFirstName, we don't need its previous value, so always replace it with new inputs value on Change
+           <input
+                type="text"
+                placeholder="First Name"
+                onChange={event => setFirstName(event.target.value)}
+            />
+
+
+
+    **With Many inputs - we hold in a single state, with value of an object, that we set its properties to our inputs. and have a single handleChange function
+       -> remember the "name" property from using labels in js, we use them here to identify the unique input, to match it with its object property
+
+        const [formData, setFormData] = React.useState(
+            {firstName: "", lastName: ""});
+
+            function handleChange(event) {
+                setFormData(event.target.value)
+            }
+
+            <input
+                type="text"
+                placeholder="First Name"
+                onChange={handleChange}
+                name={"firstName"}
+            />
+            <input
+                type="text"
+                placeholder={"Last Name"}
+                onChange={handleChange}
+                name={"lastName"}
+           />
 
 *  */
 
 import MemeGen_Navbar from "./components/MemeGen_Navbar.jsx";
 import Meme from "./components/MemeGen_Meme.jsx";
-
-
+import jokesData from "./data/jokesData.jsx";
+import Joke from "./components/jokes.jsx";
 
 
 
 
 function App() {
 
+    const [formData, setFormData] = React.useState(
+    {firstName: "", lastName: ""});
 
+    function handleChange(event) {
+        setFormData(event.target.value)
+    }
+
+    console.log(formData);
+    return (
+       <form>
+            <input
+                type="text"
+                placeholder="First Name"
+                onChange={handleChange}
+                name={"firstName"}
+            />
+           <input
+                type="text"
+                placeholder={"Last Name"}
+                onChange={handleChange}
+                name={"lastName"}
+           />
+        </form>
+    )
+}
+
+
+/* Box testing, local state and passed down state
+
+
+function App(props) {
+
+
+    const [squares, setSquares] = React.useState(boxes);
+
+    function toggle(id) {
+        //something with setSquares and loop over to match id!
+        console.log(id);
+        setSquares(prevSquares => {
+            return prevSquares.map((square) => {
+                return square.id === id ? {...square, on: !square.on} : square;
+            })
+        })
+    }
+
+    const squareElements = squares.map(item => {
+        return <Box on={item.on} key={item.id} toggle={() => toggle(item.id)}></Box>
+    })
 
     return (
+        <main>
+            <h1>Boxes will go here</h1>
+            <div className="holder">
+                {squareElements}
+            </div>
 
-            <div className={"container"}>
+        </main>
+    )
+}
+*/
+
+/* meme generator project
+<div className={"container"}>
                 <MemeGen_Navbar />
                 <div className="content">
                     <Meme />
 
                 </div>
-            </div>
-  )
-}
-
-
-
+            </div> */
 
 /*
 travel journal project

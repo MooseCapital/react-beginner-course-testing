@@ -381,12 +381,14 @@ Forms ** - when using forms in react, we can make a separate state for items up 
                 placeholder="First Name"
                 onChange={handleChange}
                 name={"firstName"}
+                value={formData.firstName}
             />
             <input
                 type="text"
                 placeholder={"Last Name"}
                 onChange={handleChange}
                 name={"lastName"}
+                value={formData.lastName}
            />
 
         -> Currently our html onChange -> is driving our react state, and it simply mirrors its value, where as we want react to be driving the value of state
@@ -423,6 +425,15 @@ Forms ** - when using forms in react, we can make a separate state for items up 
 
                 }
             })
+
+            <input
+                type="checkbox"
+                id="isFriendly"
+                checked={formData.isFriendly}
+                onChange={handleChange}
+                name="isFriendly"
+            />
+            <label htmlFor="isFriendly">Are you friendly?</label>
 
     Radio input - radio buttons work much like checkbox but only 1 can be selected in a fieldset, since we have multiple, we must set its value AND use a special checked
         -> property, because we have more than 2 options, so we need more than true/false.
@@ -462,6 +473,7 @@ Forms ** - when using forms in react, we can make a separate state for items up 
             -> in this handler function, we want to event.preventDefault(); -> in the old days, this clears the form because we would use actions in js
             -> with event.default() it wont re-render our page and reset our state
             -> since we have been updating our state all along, we have our form data, and would easily be able to pass that to an api by someAPI(formData)
+
                  <form className={"form1"} onSubmit={handleSubmit}>
                 function handleSubmit(event) {
                     event.preventDefault();
@@ -469,6 +481,37 @@ Forms ** - when using forms in react, we can make a separate state for items up 
                 }
 
 
+        -> *Remember the name attribute must match the property name for data object below, all types default to empty string but checkbox, which is false
+        ->  all have value attribute which is value={datastate.nameAttribute} -> except checkbox with is checked={data.nameAttribute}
+        -> the state and onchange function to remember  -> inputs have onChange={handleChange}  listener
+                const [formData, setFormData] = React.useState(
+                    {
+                        firstName: "",
+                        lastName: "",
+                        email: "",
+                        comments: "",
+                        isFriendly: true,
+                        employment: "",
+                        favColor: ""
+                    }
+                )
+                console.log(formData.favColor)
+
+                function handleChange(event) {
+                    console.log(event)
+                    const {name, value, type, checked} = event.target
+                    setFormData(prevFormData => {
+                        return {
+                            ...prevFormData,
+                            [name]: type === "checkbox" ? checked : value
+                        }
+                    })
+                }
+
+    conditional refresh - when we need only 2 options, we use ternary ? 1 : 2;  -> when we need more we use multi if() {  } elseif() statements
+        -> we can simplify short conditionals with the &&, that we learned above, it is up to us whichever is easier to read
+            if (signup.emailMe) console.log("Thanks for signing up for our newsletter!");
+            signup.emailMe && console.log("Thanks for signing up for our newsletter!");
 
 
 *  */
@@ -482,117 +525,29 @@ import Joke from "./components/jokes.jsx";
 
 function App() {
 
-    const [formData, setFormData] = React.useState(
-    {firstName: "", lastName: "", email: "", comments: "",
-    isFriendly: false, employment: "", favColor: "" });
+
+
 
     function handleChange(event) {
-        setFormData(prevForm => {
-            const {name, value, type, checked} = event.target;
-            return {
-                ...prevForm,
-                [name] : type === "checkbox" ? checked : value,
 
-            }
-        })
+
+
     }
-
 
     function handleSubmit(event) {
         event.preventDefault();
-        console.log(formData);
+
     }
 
 
     return (
-       <form className={"form1"} onSubmit={handleSubmit}>
-            <input
-                type="text"
-                placeholder="First Name"
-                onChange={handleChange}
-                name={"firstName"}
-                value={formData.firstName}
-            />
-           <input
-                type="text"
-                placeholder={"Last Name"}
-                onChange={handleChange}
-                name={"lastName"}
-                value={formData.lastName}
-           />
-           <input
-                type="email"
-                placeholder={"Email"}
-                onChange={handleChange}
-                name={"email"}
-                value={formData.email}
-           />
-           <textarea
-                placeholder={"comments"}
-                onChange={handleChange}
-                name={"comments"}
-                value={formData.comments}
-           />
-           <input
-               type="checkbox"
-               id="isFriendly"
-               name={"isFriendly"}
-               checked={formData.isFriendly}
-               onChange={handleChange}
-           />
-           <label htmlFor="isFriendly">Are you friendly?</label>
-           <fieldset>
-                <legend>Current employment status</legend>
+       <div className={"container"}>
+                <MemeGen_Navbar />
+                <div className="content">
+                    <Meme />
 
-                <input
-                    type="radio"
-                    id="unemployed"
-                    name={"employment"}
-                    value={"unemployed"}
-                    onChange={handleChange}
-                    checked={formData.employment === "unemployed"}
-                />
-                <label htmlFor="unemployed">Unemployed</label>
-                <br />
-
-                <input
-                    type="radio"
-                    id="part-time"
-                    name={"employment"}
-                    value={"part-time"}
-                    onChange={handleChange}
-                    checked={formData.employment === "part-time"}
-                />
-                <label htmlFor="part-time">Part-time</label>
-                <br />
-
-                <input
-                    type="radio"
-                    id="full-time"
-                    name={"employment"}
-                    value={"full-time"}
-                    checked={formData.employment === "full-time"}
-                    onChange={handleChange}
-                />
-                <label htmlFor="full-time">Full-time</label>
-                <br />
-
-            </fieldset>
-           <select
-               name="favColor"
-               id="favColor"
-               onChange={handleChange}
-               value={formData.favColor}
-           >
-               <option value="">-- Choose --</option>
-               <option value="red">red</option>
-               <option value="blue">blue</option>
-               <option value="green">green</option>
-               <option value="yellow">yellow</option>
-
-           </select>
-            <button>send it in</button>
-        </form>
+                </div>
+            </div>
     )
 }
 

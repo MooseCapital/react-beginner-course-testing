@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import './App.css'
 
 /*
@@ -282,6 +282,8 @@ we want o make components like imdb has a format for new movies, so it can simpl
             -> when state must be in the Grandparent element, then passed twice. it gets complicated.. this is called context -> and can be managed by redux, a 3rd party state manager
             -> best pracice, keep state as local as we can -> meaning, if a child element only needs a state, don't put it way up in it's grandparent!
 
+
+
             *style - like in html, as an attribute, we can use style="background-color: white" -> to insert any css in html element
                     -> we can do the same with react, BUT remember how we insert javascript as well.. it means we can change that style like state
                     ->dynamically, where as in normal html, style is always what we set, and we would need native js to change it
@@ -289,7 +291,7 @@ we want o make components like imdb has a format for new movies, so it can simpl
                     -> js styles.backgroundColor is an object, so in react we access it by an object as well
                         -> style={ {backgroundColor: red}  }  -> see how we have to edit it like an object, vs html simply need style=""  string
 
-                    -> we can simply set styles ={ backgroundColor: red}   ->inside the element in jsx, we write in style={styles}  for simplicity..
+              **  -> we can simply set styles = { backgroundColor: red}   ->inside the element in jsx, we write in style={styles}  for simplicity..
 
                     ->dynamic styles are useful, what if we pass in darkmode="true" to our main app, and have it change!
                         -> {backgroundColor: props.darkmode ? "black" : "white";  }
@@ -514,6 +516,76 @@ Forms ** - when using forms in react, we can make a separate state for items up 
             signup.emailMe && console.log("Thanks for signing up for our newsletter!");
 
 
+    API* - using APIs react, if we remember from javascript, this is almost the same
+        1 -> get the data (fetch)
+        2 -> save the data to state
+        **we quickly find out, setting state in the fetch call makes an infinite loop! -> api gets data, converts to json, then calls set state -> state reloads and refreshes
+                -> entire react component, we are on the top level so we have problems! -> on refresh, we api call again and set state again.. and again..
+            fetch("https://swapi.dev/api/people/1")
+            .then(res => res.json())
+            .then(data => setStarWarsData(data))
+
+
+
+            //remember we must get the fetch -> then make it .json() -> we make this easy with async and await, so there isnt multiple .then() statements
+                async function starwars() {
+                    try {
+                        let data = await (await (fetch("https://swapi.dev/api/people/1"))).json();
+                        console.log(data.name)
+                    }
+                    catch (err) {
+                        throw new Error(err)
+                    }
+                }
+
+    Side Effects -  what can't react handle on its own?
+            -> local storage
+            -> api/database interactions
+            -> subscriptions ( web sockets)
+            -> syncing 2 internal states together
+            -> basically anything react is NOT in charge of
+
+        useEffect() -> a hook, like useState() also a hook. Hooks are a new addition in React 16.8. They let you use state and other React features without writing a class.
+
+        Hooks must be called on the top level of our components -> hooks should NOT be inside an if statement or run on condition, this fails reacts way to run hooks like useEffect
+            it simply runs the state and Effect in order, so it matches them up, if we put it in a condition, it might not run and mess up the order!
+            -> we can put if statements inside the useEffect()
+            -> Don’t call Hooks inside loops, conditions, or nested functions -> and before any returns to ensure they are ran in the same order every time
+            
+        React.useEffect() -> our fetch is considered a side Effect because it's reaching OUTSIDE reacts ecosystem, but also trying to SET state in the process
+                            fetch(setstate) -> fetches info, sets the state -> re renders app -> fetches again.. -> infinite loop.. -> we need useEffect()!!
+
+
+        -> if we don't provide a 2nd parameter to useEffect, there is almost no difference if our fetch() is in the callback function or outside
+            -> the only difference, useEffect() is guaranteed to run AFTER the jsx components have rendered to the dom.
+            parameter -> [] -> called "dependencies array" -> useEffect looks to the array to see if we should keep running useEffect again
+                    --> if the value inside the param changes between renders, then the useEffect runs.. if it's still the same value. it does NOT run.
+                    ->[] empty array dependency value will run once, but if we insert state -> [stateVar] -> it always equals current state and runs like if it wasnt inside Effect
+                    -> if we simply want the fetch useEffect() called once on first render, simply leave [] blank for one run
+
+            React.useEffect(function () {
+                fetch("https://swapi.dev/api/people/1")         -->     we put our
+                .then(res => res.json())
+                .then(data => setStarWarsData(data))
+            }, [])
+
+        How to use Array dependencies in useEffect -> the question is, do we want our api called once on render, or every time we have some event?
+            -> we have 2 states, one for array dependency, one for api call data holder --> our count state fits nicely in the api call
+                    -> we run every time count changes -> count changes onClick -> click changes setCount which adds one to previous number
+                    -> as we see with our meme generator, we don't necesarily need a count state seperately to run a fetch on every button click
+                        -> we could simply update another useful state on each function click that will re render, and run our  useEffect on load. []
+                            -> useEffect would be left blank, but still runs every time onClick because a separate state like the count
+                const [starWarsData, setStarWarsData] = React.useState({})
+                const [count, setCount] = React.useState(1)
+
+                React.useEffect(function() {
+                    fetch(`https://swapi.dev/api/people/${count}`)
+                        .then(res => res.json())
+                        .then(data => setStarWarsData(data))
+                    }, [count])
+
+                <button onClick={() => setCount(prevCount => prevCount + 1)}>Get Next Character</button>
+
 *  */
 
 import MemeGen_Navbar from "./components/MemeGen_Navbar.jsx";
@@ -525,19 +597,16 @@ import Joke from "./components/jokes.jsx";
 
 function App() {
 
+    const [starWarsData, setStarWarsData] = React.useState({})
+    const [count, setCount] = React.useState(0)
+
+    React.useEffect( () => {
+        fetch("https://api.imgflip.com/get_memes")
+        .then(res => res.json())
+       .then(data => setStarWarsData(data.data.memes[0].url))
+    },[])
 
 
-
-    function handleChange(event) {
-
-
-
-    }
-
-    function handleSubmit(event) {
-        event.preventDefault();
-
-    }
 
 
     return (

@@ -1,23 +1,13 @@
-import memeData from "../data/meme-data.js";
-import React from "react";
+import React, {useEffect} from "react";
 
 function Meme() {
 
-    /**
-     * Challenge:
-     * 1. Set up the text inputs to save to
-     *    the `topText` and `bottomText` state variables.
-     * 2. Replace the hard-coded text on the image with
-     *    the text being saved to state.
-     */
-
-
-    const [allMemeImages, setAllMemeImages] = React.useState(memeData)
+    const [allMemes, setAllMemes] = React.useState([])
 
     const [meme, setMeme] = React.useState({
         topText: "",
         bottomText: "",
-        randomImage: ""
+        randomImage: "https://i.imgflip.com/3oevdk.jpg"
     })
 
     function handleChange(event) {
@@ -30,18 +20,23 @@ function Meme() {
         })
     }
 
+    useEffect(() => {
+            fetch("https://api.imgflip.com/get_memes")
+                .then(res => res.json())
+                .then(data => setAllMemes(data.data.memes))
+        },[])
+
     function newMeme() {
-        const memeArray = memeData.data.memes;
-        const random_0_To_99 = Math.floor(Math.random() * 100);
-        const url = memeArray[random_0_To_99].url;
+        // const memeArray = allMemes.data.memes;
+        const random_0_To_99 = Math.floor(Math.random() * allMemes.length);
+        const url = allMemes[random_0_To_99].url;
 
         setMeme(prevMeme => {
             return {
                 ...prevMeme,
                 randomImage: url,
             }
-        }
-        )
+        })
     }
 
     return (

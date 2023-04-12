@@ -7,7 +7,7 @@ function Meme() {
     const [meme, setMeme] = React.useState({
         topText: "",
         bottomText: "",
-        randomImage: "https://i.imgflip.com/3oevdk.jpg"
+        randomImage: "", //https://i.imgflip.com/3oevdk.jpg
     })
 
     function handleChange(event) {
@@ -20,11 +20,26 @@ function Meme() {
         })
     }
 
-    useEffect(() => {
+  /*   useEffect(() => {
             fetch("https://api.imgflip.com/get_memes")
                 .then(res => res.json())
                 .then(data => setAllMemes(data.data.memes))
         },[])
+ */
+    useEffect(() => {
+        async function getMemes() {
+            try {
+                let res = await fetch("https://api.imgflip.com/get_memes");
+                let data = await res.json();
+                setAllMemes(data.data.memes)
+            }
+            catch (err) {
+                throw new Error(err)
+            }
+        }
+        getMemes()
+    }, [])
+
 
     function newMeme() {
         // const memeArray = allMemes.data.memes;

@@ -572,8 +572,8 @@ Forms ** - when using forms in react, we can make a separate state for items up 
         How to use Array dependencies in useEffect -> the question is, do we want our api called once on render, or every time we have some event?
             -> we have 2 states, one for array dependency, one for api call data holder --> our count state fits nicely in the api call
                     -> we run every time count changes -> count changes onClick -> click changes setCount which adds one to previous number
-                    -> as we see with our meme generator, we don't necesarily need a count state seperately to run a fetch on every button click
-                        -> we could simply update another useful state on each function click that will re render, and run our  useEffect on load. []
+                    -> as we see with our meme generator, we don't necessarily need a count state separately to run a fetch on every button click
+                        -> we could simply update another useful state on each function click that will re-render, and run our  useEffect on load. []
                             -> useEffect would be left blank, but still runs every time onClick because a separate state like the count
                 const [starWarsData, setStarWarsData] = React.useState({})
                 const [count, setCount] = React.useState(1)
@@ -585,6 +585,61 @@ Forms ** - when using forms in react, we can make a separate state for items up 
                     }, [count])
 
                 <button onClick={() => setCount(prevCount => prevCount + 1)}>Get Next Character</button>
+
+        Await & Async in useEffect() - we know Async functions always return a promise, and useEffect return is the "cleanup" function, so it doesn't work directly..
+            --> once again, we use a callback function, async inside that function.. not Async as the MAIN function passed in useEffect
+            -> remember our postfix completion  name.useasync
+                useEffect(() => {
+                        async function getMemes() {
+                            try {
+                                let res = await fetch("https://api.imgflip.com/get_memes");
+                                let data = await res.json();
+                                setAllMemes(data.data.memes)
+                            }
+                            catch (err) {
+                                throw new Error(err)
+                            }
+                        }
+                        getMemes()
+                    }, [])
+
+
+        **useEffect() for event listeners -> since some events can't be simply added to our jsx element, it's a side effect because react doesn't watch the event
+                ->if we simply addEventListener in the open, it will run on each render.. wrong
+                -> run once, add event to change our state, which ignores useEffect() on 2nd run because array dependency is same. -> log one time only
+                -> if log was inside the event, it would log every single time we move the window width, that is separate event handler function from entire  useEffect()!
+
+                                 const [windowWidth, setWindowWidth] = React.useState(window.innerWidth)
+                                        React.useEffect(() => {
+                                            console.log("effect run")
+                                            window.addEventListener("resize", function() {
+                                                setWindowWidth(window.innerWidth)
+                                            })
+                                        }, [])
+                                  <h1>Window width: {windowWidth}</h1>
+
+                -> bug & memory leak! -> in the main component, we conditionally render the WindowTracker component..
+                -> now if show is false, WindowTracker component won't render -> BUT we already rendered it once, which added our event listener above,
+                -> so the component is not there, but our event is listening on every window width change, which is leaking memory for us and taking resources..
+                -> because the component is not rendered but has a state variable windowWidth that is changing, we get an error since state is changing
+                            ->  Can't perform a React state update on an unmounted component.
+                -> we fix this by returning a function inside useEffect(), this is our cleanup function, event listeners must have their function outside the event, so
+                    -> it can then be passed to the removeEventListener() as well!
+            **  -> we see when the component is removed from the page, it activates the cleanup function (what we return from useEffect) and removes event listener, no memory leak!!
+
+                                React.useEffect(() => {
+                                        function moveWidth() {
+                                            setWindowWidth(window.innerWidth)
+                                        }
+                                    window.addEventListener("resize", moveWidth)
+
+                                    return function() {
+                                        window.removeEventListener("resize", moveWidth)
+                                    }
+                                }, [])
+
+
+
 
 *  */
 

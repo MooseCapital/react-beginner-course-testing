@@ -1,7 +1,8 @@
+import img1 from "/assets-memegen/Troll-Face.png"
 function MemeGen_Navbar() {
     return (
         <nav className={"meme-nav"}>
-            <img src="/public/assets-memegen/Troll Face.png" alt="" />
+            <img src={img1} alt="" />
             <h3 className="title">Meme Generator</h3>
             <p>React Course - Project 3</p>
         </nav>

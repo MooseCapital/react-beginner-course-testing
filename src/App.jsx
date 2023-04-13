@@ -639,6 +639,32 @@ Forms ** - when using forms in react, we can make a separate state for items up 
                                 }, [])
 
 
+Practice review -
+
+    First challenge is adding darkmode to the page from a switcher div. remember the magic happens in css!
+        -> every element has an under dark class option, that sets the color or background to dark
+        -> in CSS       nav.dark .toggler--slider {  }
+
+        Outside css, in the components we have a simple ternary to make classname blank or "dark" if the prop passed in is true/falsy
+         -> on the main, and Nav element very top     className={props.darkMode ? "dark": ""}
+          -> we pass in props for the darkMode=true/false value for className AND the onClick function.
+          -> remember we have state at the app level because BOTH components need access, but only nav needs the onClick toggle function
+
+          -> so we set a state holder, onClick will change and re-render to dark mode and back, since state is at app level
+            -> toggle function will be at app level too, and we simply switch the setstate() which we did many times with NOT operator
+            const [dark_Mode, setDark_Mode] = useState(false)
+
+                function toggleDarkMode() {
+                    setDark_Mode(prevState => !prevState)
+                }
+
+              <FunFacts_Navbar
+                // key={1}
+                darkMode={dark_Mode}
+                toggleDarkMode={toggleDarkMode}
+               />
+
+
 
 
 *  */
@@ -654,17 +680,28 @@ import FunFacts_Main from "./components/FunFacts_Main.jsx";
 
 function App() {
 
+    const [dark_Mode, setDark_Mode] = useState(false)
 
-
-
+    function toggleDarkMode() {
+        setDark_Mode(prevState => !prevState)
+    }
 
 
 
 
     return (
        <div className={"container"}>
-           <FunFacts_Navbar/>
-           <FunFacts_Main/>
+           <FunFacts_Navbar
+            // key={1}
+            darkMode={dark_Mode}
+            toggleDarkMode={toggleDarkMode}
+           />
+           <FunFacts_Main
+           // key={2}
+           darkMode={dark_Mode}
+
+
+           />
 
             </div>
     )
@@ -767,5 +804,35 @@ function App() {
   )
 }
 *  */
+
+/* Darkmode project
+function App() {
+
+    const [dark_Mode, setDark_Mode] = useState(false)
+
+    function toggleDarkMode() {
+        setDark_Mode(prevState => !prevState)
+    }
+
+
+
+
+    return (
+       <div className={"container"}>
+           <FunFacts_Navbar
+            // key={1}
+            darkMode={dark_Mode}
+            toggleDarkMode={toggleDarkMode}
+           />
+           <FunFacts_Main
+           // key={2}
+           darkMode={dark_Mode}
+
+
+           />
+
+            </div>
+    )
+} */
 
 export default App

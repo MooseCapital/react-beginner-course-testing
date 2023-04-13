@@ -15,7 +15,7 @@ margin: 0;
 }
 
 
-h1,h2,h3,h4,h4,p,div {
+h1,h2,h3,h4,h4,h5,h6,p,div {
 margin: 0;
 padding: 0;
 }
@@ -83,16 +83,14 @@ padding: 5px;
 
 
 
-h1, h2, h3, h4, h5, h6, p {
-    margin: 0;
-}
+
 
 
 .container {
     display: flex;
     flex-direction: column;
     height: 100vh;
-    width: 550px;
+
 }
 
 /* NAV styles */

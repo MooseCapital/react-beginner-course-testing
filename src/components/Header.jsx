@@ -1,5 +1,5 @@
-/*
-function Header() {
+
+function HeadNavbar() {
     return (
         <header>
             <img src="src/assets/moose.png" alt=""/>
@@ -17,4 +17,4 @@ function Header() {
         </header>
     )
 }
-export default Header;*/
+export default HeadNavbar;

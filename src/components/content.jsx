@@ -1,4 +1,4 @@
-/*
+
 function Content() {
     return (
         <main>
@@ -9,4 +9,4 @@ function Content() {
         </main>
     )
 }
-export default Content*/
+export default Content

@@ -647,30 +647,25 @@ import MemeGen_Navbar from "./components/MemeGen_Navbar.jsx";
 import Meme from "./components/MemeGen_Meme.jsx";
 import jokesData from "./data/jokesData.jsx";
 import Joke from "./components/jokes.jsx";
+import FunFacts_Navbar from "./components/FunFacts_Navbar.jsx";
+import FunFacts_Main from "./components/FunFacts_Main.jsx";
 
 
 
 function App() {
 
-    const [starWarsData, setStarWarsData] = React.useState({})
-    const [count, setCount] = React.useState(0)
 
-    React.useEffect( () => {
-        fetch("https://api.imgflip.com/get_memes")
-        .then(res => res.json())
-       .then(data => setStarWarsData(data.data.memes[0].url))
-    },[])
+
+
 
 
 
 
     return (
        <div className={"container"}>
-                <MemeGen_Navbar />
-                <div className="content">
-                    <Meme />
+           <FunFacts_Navbar/>
+           <FunFacts_Main/>
 
-                </div>
             </div>
     )
 }

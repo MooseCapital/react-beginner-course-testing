@@ -1,7 +1,7 @@
-import smallLogo from "/FunFacts_Assets/react_small_logo.svg"
+// import smallLogo from "/FunFacts_Assets/react_small_logo.svg"
+const smallLogo = new URL('/FunFacts_Assets/react_small_logo.svg', import.meta.url).href
 
 export default function FunFacts_Navbar(props) {
-
     return (
          <nav
             className={props.darkMode ? "dark": ""}

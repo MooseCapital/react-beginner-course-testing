@@ -638,6 +638,19 @@ Forms ** - when using forms in react, we can make a separate state for items up 
                                     }
                                 }, [])
 
+            uses for useEffect outside of fetch() and event listeners..
+                        --> as we see in the note taking app, we want to add to local storage on each note creation and note update. so instead
+                            -> of putting localStorage.setItem("notes", JSON.Stringify(notes)) -> in each function, we make a use effect
+                            ->which handles side effect and things outside reacts control, which localstorage is.. BUT we also get to run this localstorage.setitem
+                            -> every time the notes state changes, remember array dependencies. [notes]
+                            ->with the useEffect, we get to pick what state sets it off to run vs having it run on every re-render
+
+            Lazy state loading - every time we have an onChange event, react is re-rendering, our state changes to what we want
+                    -> BUT the code inside useState() runs again like useState(console.log) would log again, event though it's not using that state
+                    -> since we have a VERY resource hungry call like localStorage.getItem() inside useState(), we could be slowing things down alot
+                    -> to prevent this we "lazy load" which simply makes sure our code in useState() runs one time on first render and never again
+                            const [notes, setNotes] = React.useState( JSON.parse(localStorage.getItem("notes")) || [])
+                     --> to do this, we simply.. use a callback function once again.
 
 Practice review -
 
@@ -669,41 +682,15 @@ Practice review -
 
 *  */
 
-import MemeGen_Navbar from "./components/MemeGen_Navbar.jsx";
-import Meme from "./components/MemeGen_Meme.jsx";
-import jokesData from "./data/jokesData.jsx";
-import Joke from "./components/jokes.jsx";
-import FunFacts_Navbar from "./components/FunFacts_Navbar.jsx";
-import FunFacts_Main from "./components/FunFacts_Main.jsx";
-
 
 
 function App() {
 
-    const [dark_Mode, setDark_Mode] = useState(false)
-
-    function toggleDarkMode() {
-        setDark_Mode(prevState => !prevState)
-    }
-
-
-
 
     return (
-       <div className={"container"}>
-           <FunFacts_Navbar
-            // key={1}
-            darkMode={dark_Mode}
-            toggleDarkMode={toggleDarkMode}
-           />
-           <FunFacts_Main
-           // key={2}
-           darkMode={dark_Mode}
+        <div className="container">
 
-
-           />
-
-            </div>
+        </div>
     )
 }
 

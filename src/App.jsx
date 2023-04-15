@@ -34,7 +34,7 @@ react 17 old way ->
             </ul>
         )
     }
-//making elements inside a variable like this is not that common, later will will be making custom compnents
+//making elements inside a variable like this is not that common, later will be making custom compnents
     let uList = (
     <ul>
         <li>item 1</li>
@@ -73,7 +73,7 @@ react 17 old way ->
 
 
 //once we have thousands or maybe even 10's of thousands of lines, we need to split that up into modules
-    //this is the whole point of react, putting components into separate files neatly!
+    //this is the whole point of React, putting components into separate files neatly!
     //always need to import React from "react" in the components module, so it React changes the jsx
 
 
@@ -103,7 +103,7 @@ import Footer from "./components/footer.jsx";
 */
 /*
 Props:
-we want o make components like imdb has a format for new movies, so it can simply add them to the website fast from dynamic content.
+we want to make components like imdb has a format for new movies, so it can simply add them to the website fast from dynamic content.
     a developer doesn't have to individually add each movie, they already have the format, these are called props in react
 
     anything after the arrows, enter jsx mode like html. to input javascript, react lets us input it with {  } ,
@@ -114,7 +114,7 @@ we want o make components like imdb has a format for new movies, so it can simpl
     when we simply place a contact-card into our app multiple times, we are just copying the data 4 times, we want the same format.. with
         4 different sets of data. like a function that returns 1 + 2, always returns 3. it's entirely useless for a format, so we use paramaters, arguments..
 
-    in HTML we can't just makeup a random attribute and add it, but with react, we can make our own custom attribute used, to pass in arguments to our component
+    in HTML, we can't just make up a random attribute and add it, but with react, we can make our own custom attribute used, to pass in arguments to our component
         these look the same as attributes we know from HTML, in react these are properties, called Props
 
    **Prop names can be whatever we want, they are simply attribute like items, that work like an argument in a function
@@ -124,7 +124,7 @@ we want o make components like imdb has a format for new movies, so it can simpl
         now we have an easily replicable component, we simply pass the argument through props when we render it
 
         we can NOT add props to a native DOM element passed in JSX like <div blahblah="hi"> , remember props -> attribute like
-            are for our CUSTOM components, so when react renders the JSX div, it sees it is native HTML and sees our prop on it, it knows the built in element
+            are for our CUSTOM components, so when react renders the JSX div, it sees it is native HTML and sees our prop on it, it knows the built-in element
                 does not have an attribute by that name.. and fails
 
         Destructuring -> in react we saw we have an object like parameter in our component, to handle prop arguments passed in..
@@ -148,7 +148,7 @@ we want o make components like imdb has a format for new movies, so it can simpl
             return <Jokes setup={joke.setup} punchline={joke.punchline} />
                 ->we are not done yet, since JokeElements is an array of jsx elements we've rendered from Jokes component
                 -> & the JokesData.. remember React gets this array of elements and renders it, JokeElements is NOT a component
-                ->so we dont use  <JokeElements />  like it is a component, we input the array like {JokeElements}
+                ->so we don't use  <JokeElements />  like it is a component, we input the array like {JokeElements}
                 ** THIS made our lives MUCH easier, so we have not types out multiple 5+ Joke components, and typed the props for each one!
                         we are merging data and returning components to the new array, we use this when we want many of the SAME component
 
@@ -158,7 +158,7 @@ we want o make components like imdb has a format for new movies, so it can simpl
                 the first falsy value, if we get false before &&  -> it never gets to the second item to render it.. <div></div>
 
             -> in the component, when we are mapping data, we can check a passed in prop -> see if it meets conditon, then render based off that
-                -> above we, simply check if it exist then render, here we check specific value to render. possibilities are endless!
+                -> above we, simply check if it exists then render, here we check specific value to render. possibilities are endless!
 
             {props.openspots === 0 && <div className="card-badge">SOLD OUT</div>}
                 Smart example used for sold out sign -> we pass in open spots from data -> card checks if openspots === 0. then use && again. which
@@ -652,6 +652,14 @@ Forms ** - when using forms in react, we can make a separate state for items up 
                             const [notes, setNotes] = React.useState( JSON.parse(localStorage.getItem("notes")) || [])
                      --> to do this, we simply.. use a callback function once again.
 
+
+          Local storage - remember local storages is stores info on the persons browser forever, until we learn databses this can be an easy great solution
+                -> to making cool project. for accessing, we must remember JSON.stringify() and JSON.parse() to get the string format for storage https://blog.logrocket.com/storing-retrieving-javascript-objects-localstorage/
+
+
+
+
+
 Practice review -
 
     First challenge is adding darkmode to the page from a switcher div. remember the magic happens in css!
@@ -680,11 +688,13 @@ Practice review -
 
 
 
+
 *  */
 
 
 
 function App() {
+
 
 
     return (

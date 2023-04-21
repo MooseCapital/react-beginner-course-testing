@@ -652,6 +652,9 @@ Forms ** - when using forms in react, we can make a separate state for items up 
                             const [notes, setNotes] = React.useState( JSON.parse(localStorage.getItem("notes")) || [])
                      --> to do this, we simply.. use a callback function once again.
 
+                Lazy state initialization - const [notes, setNotes] = useState(() => console.log() )
+                    -> now our initial useState code runs once on first render and never again
+
 
           Local storage - remember local storages is stores info on the persons browser forever, until we learn databses this can be an easy great solution
                 -> to making cool project. for accessing, we must remember JSON.stringify() and JSON.parse() to get the string format for storage https://blog.logrocket.com/storing-retrieving-javascript-objects-localstorage/
@@ -686,10 +689,30 @@ Practice review -
                />
 
 
+        when we need to pass data in through an event, as parameter, then compare that with each item in an array, we can do 2 ways
+            const dieElements = dice.map((Dice) => {
+                return <Die value={Dice.value} isHeld={Dice.isHeld} key={Dice.id} holdDice={() => holdDice(Dice.id)} />
+            })
+            in the component, we already passed in the prop, so it simply calls it..
+                <div className={props.isHeld ? "dice held" : "dice"}  onClick={props.holdDice}>{props.value}</div>
+
+          ->  or, instead of passing it in here we can use the 2nd way, little more time
+            -> we simply pass in the function only, BUT also need the id, then match them up in the component, basicaly reverse to above
+                     const dieElements = dice.map((Dice) => {
+                return <Die value={Dice.value} isHeld={Dice.isHeld} key={Dice.id} holdDice={holdDice} id={Dice.id} />
+                    })
+                    in the component, we already passed in the prop, so it simply calls it..
+                        <div className={props.isHeld ? "dice held" : "dice"}  onClick={() => props.holdDice(props.id)}>{props.value}</div>
 
 
 
-*  */
+
+
+
+
+
+
+        *  */
 
 
 

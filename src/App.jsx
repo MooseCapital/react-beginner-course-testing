@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import './App.css'
+import Test_Comp from "./components/Test_Comp.jsx";
 
 /*
 
@@ -560,6 +561,7 @@ Forms ** - when using forms in react, we can make a separate state for items up 
             -> the only difference, useEffect() is guaranteed to run AFTER the jsx components have rendered to the dom.
             parameter -> [] -> called "dependencies array" -> useEffect looks to the array to see if we should keep running useEffect again
                     --> if the value inside the param changes between renders, then the useEffect runs.. if it's still the same value. it does NOT run.
+                    -> https://css-tricks.com/run-useeffect-only-once/
                     ->[] empty array dependency value will run once, but if we insert state -> [stateVar] -> it always equals current state and runs like if it wasnt inside Effect
                     -> if we simply want the fetch useEffect() called once on first render, simply leave [] blank for one run
 
@@ -587,6 +589,9 @@ Forms ** - when using forms in react, we can make a separate state for items up 
                 <button onClick={() => setCount(prevCount => prevCount + 1)}>Get Next Character</button>
 
         Await & Async in useEffect() - we know Async functions always return a promise, and useEffect return is the "cleanup" function, so it doesn't work directly..
+            -> cleanup function in useEffect like for event listeners.. but for async fetch()! if user stops or exits while loading fetch, we want to stop it like we stop event listener
+                    -> when component is deleted https://dev.to/otamnitram/react-useeffect-cleanup-how-and-when-to-use-it-2hbm
+                            -> https://dillionmegida.com/p/why-you-should-cleanup-when-component-unmounts/
             --> once again, we use a callback function, async inside that function.. not Async as the MAIN function passed in useEffect
             -> remember our postfix completion  name.useasync
                 useEffect(() => {
@@ -604,7 +609,7 @@ Forms ** - when using forms in react, we can make a separate state for items up 
                     }, [])
 
 
-        **useEffect() for event listeners -> since some events can't be simply added to our jsx element, it's a side effect because react doesn't watch the event
+        **useEffect() for REMOVING event listeners -> since some events can't be simply added to our jsx element, it's a side effect because react doesn't watch the event
                 ->if we simply addEventListener in the open, it will run on each render.. wrong
                 -> run once, add event to change our state, which ignores useEffect() on 2nd run because array dependency is same. -> log one time only
                 -> if log was inside the event, it would log every single time we move the window width, that is separate event handler function from entire  useEffect()!
@@ -706,6 +711,30 @@ Practice review -
 
 
 
+** The Odin Project React Notes -
+
+    Keys revew - when rendering elements with data.map(item => <div key={id}> <div>)
+            -> react does NOT recomment, using index in the array as the key, because if we filter, or an item changes in the array, index can change
+            ->when index changes, the key changes, which forces a re-render. if we used index, deleting 1 in [1,2,3,4,5] would make 2, now have index of 0. so it's key changed
+            -> this makes all elements place change, then re-render, if we set ID, then even if 1 gets deleted/filtered the rest still have the same key id.. so no re render!!
+        --> React says DO NOT USE INDEX as key. if we have no id in our data, we can use nano-id to generate one..
+                -> https://www.npmjs.com/package/nanoid   npm i nanoid
+                ->  in array data,  id: nanoid()
+        -> react wants to run fast, so it simply checks the key of the element, if it is the same, no re-render. if changed, then re-render. this prevents heavy scanning of the whole data
+            -> in our data, make sure we have a unique unchanging id, so no re render
+
+
+
+    Fragments - when we don't need to render a parent element to hold elements, no need for extra parent node holder..
+            -> fragments let us render elements without creating a parent node. remember how hard we had to keep making flexbox parents?
+                -> this would simplify that a TON and keep our flex & grid in check!
+        -> we get a div with 1 inside, with no parent rendered. simply way to not have extra parent divs!  we can also use blank arrow brackets <> </>
+            return (
+                <Fragment>
+                    <div>1</div>
+                </Fragment>
+            )
+
 
 
 
@@ -722,10 +751,14 @@ function App() {
 
     return (
         <div className="container">
-
+            <div>hi</div>
+            <Test_Comp ></Test_Comp>
         </div>
     )
 }
+
+
+
 
 
 /* Box testing, local state and passed down state

@@ -711,9 +711,9 @@ Practice review -
 
 
 
-** The Odin Project React Notes -
+** Advanced React Notes -
 
-    Keys revew - when rendering elements with data.map(item => <div key={id}> <div>)
+    Keys - when rendering elements with data.map(item => <div key={id}> <div>) -> KEYS should be added in the data itself
             -> react does NOT recomment, using index in the array as the key, because if we filter, or an item changes in the array, index can change
             ->when index changes, the key changes, which forces a re-render. if we used index, deleting 1 in [1,2,3,4,5] would make 2, now have index of 0. so it's key changed
             -> this makes all elements place change, then re-render, if we set ID, then even if 1 gets deleted/filtered the rest still have the same key id.. so no re render!!
@@ -725,7 +725,7 @@ Practice review -
 
 
 
-    Fragments - when we don't need to render a parent element to hold elements, no need for extra parent node holder..
+    Fragments - when we don't need to render a parent element to hold elements, no need for extra parent node holder..   https://dev.to/tumee/react-fragments-what-why-how-2kh1
             -> fragments let us render elements without creating a parent node. remember how hard we had to keep making flexbox parents?
                 -> this would simplify that a TON and keep our flex & grid in check!
         -> we get a div with 1 inside, with no parent rendered. simply way to not have extra parent divs!  we can also use blank arrow brackets <> </>
@@ -737,9 +737,42 @@ Practice review -
 
 
 
+                                            https://react.dev/learn/passing-props-to-a-component#specifying-a-default-value-for-a-prop
+   Default Props - just like default arguments in function (name = "moose") => {}   ->if no name is passed in, we default to the value we wrote. just like.. DEFAULT props
+            --> default props, if inside our Person component, we don't pass down name={name} or something like that, we have no value to grab from props.name, so we get an error
+                    -> default props let us put.. a default value to avoid this. of course, we have a second way to do this below, this is reacts built in prop
+                ComponentName.defaultProps = {
+                    name: "moose",
+                    hobby: "art"
+                }
+
+            -> we can also destructure right in the top easily!, remember how we avoid props.name, we destructure, and use like default argument above
+                function Person({name="moose", hobby="art"})
+
+            ->destructure above gives us a chance to default prop in the parameter section.. BUT if we need to pass all props down below, this can be tough typing it all again!
+            ->separate from default props. when we need to forward many props to another grandchild element we simply use items={...props}
+            -> using props and not destructure, is the best option for us, reminder, we can put defaultProps after export!
+                ->if we conditionally render {props.hobby && <div>{props.hobby}</div>} prop not passed down, but set default above, we WILL always render,
+                        ->since we have default that always exist
 
 
+            -> props must NOT be changed, bad practice props.name = "bob" *we will get an error. props are for passing values down to components.
 
+    Prop types - How we enforce the variable type passed in prop, num, string, boolean, obj, array function. prop Types validate our types         https://www.freecodecamp.org/news/how-to-use-proptypes-in-react/
+            -> before React 15.5 it was included, now we must install it ourselves!
+            -> npm install prop-types --save
+
+            -> we have very similar syntax to ComponentName.defaultProps above! we do not need this on small projects, but we surely do for big things and production!
+            -> we get a logged WARNING if types are wrong, this is not the same as throwing an error that prevents all rendering. our program runs like normal
+
+                ComponentName.propTypes = {
+                    propName: propTypes.number,
+                    name: propTypes.string,
+                    data: propTypes.array
+                }
+
+
+            ->we can also see how useful they are for debugging your apps when the app is too big to find the bug with just conventional methods.
 
         *  */
 
@@ -751,8 +784,11 @@ function App() {
 
     return (
         <div className="container">
-            <div>hi</div>
-            <Test_Comp ></Test_Comp>
+            <Test_Comp
+                name={"mike"}
+                hobby={"woodwork"}
+                height={["hi", "bye"]}
+            />
         </div>
     )
 }

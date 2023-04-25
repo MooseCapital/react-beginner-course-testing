@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import './App.css'
-import Test_Comp from "./components/Test_Comp.jsx";
+
+import Overview from "./components/Overview.jsx";
 
 /*
 
@@ -228,6 +229,7 @@ we want to make components like imdb has a format for new movies, so it can simp
                                     -> where as setResult(count + 1) never overrides it, it simply adds one to it. which is the point of the state function, modifies state but not the main holder
 
                         Best practice -> if we ever need old value in state to determine new value, we pass a callback function.. setResult(count + 1) -> NOT best practice..
+                                         -> learn about directly mutating data like arrays, which we normally map and spread over data in setState to not touch the original http://web.archive.org/web/20211101150139/https://lorenstewart.me/2017/01/22/javascript-array-methods-mutating-vs-non-mutating/
                                 setResult((value) => {    -> react will always pass our old state value as the variable, which lets us use it without modifying it safely!
                                     return value + 1;
                                 })
@@ -592,6 +594,7 @@ Forms ** - when using forms in react, we can make a separate state for items up 
             -> cleanup function in useEffect like for event listeners.. but for async fetch()! if user stops or exits while loading fetch, we want to stop it like we stop event listener
                     -> when component is deleted https://dev.to/otamnitram/react-useeffect-cleanup-how-and-when-to-use-it-2hbm
                             -> https://dillionmegida.com/p/why-you-should-cleanup-when-component-unmounts/
+
             --> once again, we use a callback function, async inside that function.. not Async as the MAIN function passed in useEffect
             -> remember our postfix completion  name.useasync
                 useEffect(() => {
@@ -608,7 +611,7 @@ Forms ** - when using forms in react, we can make a separate state for items up 
                         getMemes()
                     }, [])
 
-
+                                       ->when we have event on parent, and child, in the child we must event.stopPropogation() to stop that click from running parent https://react.dev/learn/responding-to-events
         **useEffect() for REMOVING event listeners -> since some events can't be simply added to our jsx element, it's a side effect because react doesn't watch the event
                 ->if we simply addEventListener in the open, it will run on each render.. wrong
                 -> run once, add event to change our state, which ignores useEffect() on 2nd run because array dependency is same. -> log one time only
@@ -631,19 +634,22 @@ Forms ** - when using forms in react, we can make a separate state for items up 
                 -> we fix this by returning a function inside useEffect(), this is our cleanup function, event listeners must have their function outside the event, so
                     -> it can then be passed to the removeEventListener() as well!
             **  -> we see when the component is removed from the page, it activates the cleanup function (what we return from useEffect) and removes event listener, no memory leak!!
+                                                    https://bobbyhadz.com/blog/react-remove-event-listener
+                        React.useEffect(() => {
+                            function moveWidth() {
+                                setWindowWidth(window.innerWidth)
+                            }
+                            window.addEventListener("resize", moveWidth)
 
-                                React.useEffect(() => {
-                                        function moveWidth() {
-                                            setWindowWidth(window.innerWidth)
-                                        }
-                                    window.addEventListener("resize", moveWidth)
+                            return function() {
+                                window.removeEventListener("resize", moveWidth)
+                            }
+                        }, [])
 
-                                    return function() {
-                                        window.removeEventListener("resize", moveWidth)
-                                    }
-                                }, [])
+                    -> remember when component is deleted, our onClick event on jsx gets removed for us, when setting it in useEffect, we must cleanup and remove it ourself
 
-            uses for useEffect outside of fetch() and event listeners..
+
+            uses for useEffect outside of fetch() and event listeners..  LOCALSTORAGE
                         --> as we see in the note taking app, we want to add to local storage on each note creation and note update. so instead
                             -> of putting localStorage.setItem("notes", JSON.Stringify(notes)) -> in each function, we make a use effect
                             ->which handles side effect and things outside reacts control, which localstorage is.. BUT we also get to run this localstorage.setitem
@@ -711,7 +717,16 @@ Practice review -
 
 
 
-** Advanced React Notes -
+
+
+
+
+
+
+   */
+/*
+
+** Advanced React Notes -           Thinking in react, planning app layout and where state should be held - https://react.dev/learn/thinking-in-react
 
     Keys - when rendering elements with data.map(item => <div key={id}> <div>) -> KEYS should be added in the data itself
             -> react does NOT recomment, using index in the array as the key, because if we filter, or an item changes in the array, index can change
@@ -758,7 +773,7 @@ Practice review -
 
             -> props must NOT be changed, bad practice props.name = "bob" *we will get an error. props are for passing values down to components.
 
-    Prop types - How we enforce the variable type passed in prop, num, string, boolean, obj, array function. prop Types validate our types         https://www.freecodecamp.org/news/how-to-use-proptypes-in-react/
+    Prop Types - How we enforce the variable type passed in prop, num, string, boolean, obj, array function. prop Types validate our types         https://www.freecodecamp.org/news/how-to-use-proptypes-in-react/
             -> before React 15.5 it was included, now we must install it ourselves!
             -> npm install prop-types --save
 
@@ -774,20 +789,56 @@ Practice review -
 
             ->we can also see how useful they are for debugging your apps when the app is too big to find the bug with just conventional methods.
 
-        *  */
 
+
+
+
+
+*  */
 
 
 function App() {
+    const [formData, setFormData] = useState({task: ""})
+
+    const [tasks, setTasks] = useState([]);
+
+    function handleChange(event) {
+        setFormData(prevData => {
+            return {
+                ...prevData,
+                [event.target.name]: event.target.value,
+            }
+        })
+
+    }
+
+    function submitTask(event) {
+        event.preventDefault();
+        setTasks(prevTask => {
+            return [
+                ...prevTask,
+                formData
+            ]
+        })
+
+    }
 
 
 
     return (
         <div className="container">
-            <Test_Comp
-                name={"mike"}
-                hobby={"woodwork"}
-                height={["hi", "bye"]}
+            <form action="" onSubmit={submitTask} >
+                <input type="text"
+                    placeholder={"task"}
+                    name={"task"}
+                    value={formData.task}
+                    onChange={handleChange}
+                />
+                <button >Submit</button>
+            </form>
+
+            <Overview
+                tasks={tasks}
             />
         </div>
     )

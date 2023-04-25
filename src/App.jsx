@@ -805,8 +805,8 @@ function App() {
     function handleChange(event) {
         setFormData(prevData => {
             return {
-                ...prevData,
-                [event.target.name]: event.target.value,
+            ...prevData,
+                [event.target.name]: event.target.value
             }
         })
 
@@ -820,7 +820,8 @@ function App() {
                 formData
             ]
         })
-
+        // document.querySelector('input[type="text"]').focus();
+        document.querySelector('input[type="text"]').focus();
     }
 
 

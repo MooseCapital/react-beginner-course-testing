@@ -792,7 +792,7 @@ Practice review -
             -> we can create events on things we can't in jsx like window, AND we get the CLEANUP return function, that runs when unounted, AND cleansup the previous call   https://maxrozen.com/demystifying-useeffect-cleanup-function
                 -> when it's called again, it has to be working on a clean slate, so we run the clean before the main code
             -> 1, we can the 2nd param to nothing - call on initial and call every re-render
-            -> 2, we set the array dependency to blank - call on initial and never call again
+            -> 2, we set the array dependency to blank - call on initial and never call again, simply calls our code once, like starting interval, code in open calls every re-render!
             -> 3, we set the array dependency to a state - call every time state changes
                     useEffect(() => {
                         console.log(count)
@@ -801,9 +801,22 @@ Practice review -
             *Advanced - since primitives can be easily compared 1 === 1 or "bob === "bob" will always be true. numbers, strings, booleans, null, undefined
                     -> things like objects and arrays use REFERENCES not content like number or string that is easily comparable,
                     -> let a = {} , let b = {} , a === b -> FALSE!  but -> let a = {}  , b = a; a === b is TRUE
-                    -> this is why when using a state object as array dependency, even if the value is the same, it will run.
-                    -> setCount(prev => {...prev}) -> the same "value" but wrapped in new braces means new memory, not the same file cabinet, but looks like it!
-                    -> setCount(prev => prev) -> will NOT run the Effect again, because there are no new braces, thus no new file cabinet memory created, no new object.
+
+                    ** NO primitive values, instead of useMemo() to hold object or array reference.. we can simply get the values and set as useEffects array dependency
+                        -> below we have count state, and it's an object, even if those items are the same, we rerun if we simply put person.. but we put it's primitive values instead!!
+                         useEffect(() => {
+                            console.log(count)
+                        },[count.num, otherState.props..])
+            *cleanup functions - what we return from useEffect() -> we need this for many things like setting interval timer etc.. or else we set that interval every time it changes..
+                -> before every useEffect()  run, it runs the cleanup function to start with clean slate
+                            useEffect(() => {
+                                console.log("counting!")
+                                return () => {
+                                    console.log("clean up!")
+                                }
+                            },[count.num])
+
+
 
         useMemo() - gives us the result of a function call, returns memoizes values, has dependency array like useEffect(), will usually be set to variable to memoize return value
                 -> useMemo() returns memoized result, while useCallback() returns memoized function, *both only run when their dependencies update
@@ -832,15 +845,17 @@ function App() {
 
     function changeItem() {
         setCount(prev => {
-            return {...prev}
+            return {num: prev.num + 1}
         })
     }
 
-
-
+    console.log("in the open")
     useEffect(() => {
-        console.log(count)
-    },[count])
+        return () => {
+            console.log("clean up!")
+        }
+    },[count.num])
+
 
     return (
         <div className="container">

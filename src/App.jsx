@@ -1,5 +1,6 @@
 import React, {useState, useEffect, Fragment} from 'react'
 import './App.css'
+import Overview from "./components/Overview.jsx";
 
 
 /*
@@ -808,13 +809,19 @@ Practice review -
                             console.log(count)
                         },[count.num, otherState.props..])
             *cleanup functions - what we return from useEffect() -> we need this for many things like setting interval timer etc.. or else we set that interval every time it changes..
-                -> before every useEffect()  run, it runs the cleanup function to start with clean slate
-                            useEffect(() => {
-                                console.log("counting!")
-                                return () => {
-                                    console.log("clean up!")
-                                }
-                            },[count.num])
+                    -> before every useEffect()  run, it runs the cleanup function to start with clean slate
+                                useEffect(() => {
+                                    console.log("counting!")
+                                    return () => {
+                                        console.log("clean up!")
+                                    }
+                                },[count.num])
+                **  -> Cleanup fetch() -> what if the user moves before we load fetch, it is still fetching, on exit the cleanup would run and it runs before every run anyway
+                            ->an easy trick for fetch is a boolean,  access with name.useasync  postfix completion
+                            -> it might look simple, but in testing this simplicity works easily over the controller abort
+
+                    -> above is the beginner way, there is a more proper way to "abort" the fetch when user has stopped, so we get and handle the error, with controller https://developer.mozilla.org/en-US/docs/Web/API/AbortController
+                        -> we access advanced abort way with .useasyncadvanced           https://piped.kavin.rocks/watch?v=QQYeipc_cik&pp=ygUPcmVhY3QgdXNlZWZmZWN0
 
 
 
@@ -849,12 +856,16 @@ function App() {
         })
     }
 
-    console.log("in the open")
     useEffect(() => {
         return () => {
-            console.log("clean up!")
+
         }
     },[count.num])
+
+    const [getBox, setBox] = useState(false)
+    function testFetch() {
+        setBox(prev => !prev)
+    }
 
 
     return (
@@ -862,6 +873,8 @@ function App() {
             <Fragment>
                 <div>{count.num}</div>
                 <button onClick={changeItem}>count up</button>
+                <button onClick={testFetch}>get box</button>
+                {getBox && <Overview></Overview>}
             </Fragment>
 
         </div>

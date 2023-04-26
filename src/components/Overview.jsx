@@ -1,20 +1,38 @@
-import {useState} from "react";
+import {Fragment, useEffect, useState} from "react";
 
 function Overview(props) {
 
+     useEffect(() => {
+        let sub = true;
+        try {
+            async function todos() {
+            let res = await fetch("https://jsonplaceholder.typicode.com/posts");
+            let data = await res.json();
+                if (sub === true) {
+                     console.log(data)
+                }
+        }
+        todos()
+        } catch (err) {
+            if (err.name === "AbortError") {
+                console.log("fetch cancelled")
+            } else { //handle error other than abort
+                console.log("fetch error")
+            }
+        }
 
-    const listElements = props.tasks.map(item => {
-        return <li key={Math.random()}>{item.task}</li>
-    })
+        return () => {
+            sub = false;
+        }
+    }, [])
+
 
 
 
 
 
     return (
-            <ul>
-                {listElements}
-            </ul>
+            <div className="square">abc</div>
     )
 }
 

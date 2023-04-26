@@ -92,7 +92,11 @@ width: 150px;
 
 }
 
-
+.square {
+background-color: #b48ead;
+height: 100px;
+width: 100px;
+}
 
 
 

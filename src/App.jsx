@@ -1,7 +1,6 @@
-import React, { useState, useEffect } from 'react'
+import React, {useState, useEffect, Fragment} from 'react'
 import './App.css'
 
-import Overview from "./components/Overview.jsx";
 
 /*
 
@@ -789,14 +788,77 @@ Practice review -
 
             ->we can also see how useful they are for debugging your apps when the app is too big to find the bug with just conventional methods.
 
+      useEffect() advanced -  this lets us do many things like, handle side effects, handle things outside of reacts control.. fetch() calling only once on load.
+            -> we can create events on things we can't in jsx like window, AND we get the CLEANUP return function, that runs when unounted, AND cleansup the previous call   https://maxrozen.com/demystifying-useeffect-cleanup-function
+                -> when it's called again, it has to be working on a clean slate, so we run the clean before the main code
+            -> 1, we can the 2nd param to nothing - call on initial and call every re-render
+            -> 2, we set the array dependency to blank - call on initial and never call again
+            -> 3, we set the array dependency to a state - call every time state changes
+                    useEffect(() => {
+                        console.log(count)
+                    },[count])
 
+            *Advanced - since primitives can be easily compared 1 === 1 or "bob === "bob" will always be true. numbers, strings, booleans, null, undefined
+                    -> things like objects and arrays use REFERENCES not content like number or string that is easily comparable,
+                    -> let a = {} , let b = {} , a === b -> FALSE!  but -> let a = {}  , b = a; a === b is TRUE
+                    -> this is why when using a state object as array dependency, even if the value is the same, it will run.
+                    -> setCount(prev => {...prev}) -> the same "value" but wrapped in new braces means new memory, not the same file cabinet, but looks like it!
+                    -> setCount(prev => prev) -> will NOT run the Effect again, because there are no new braces, thus no new file cabinet memory created, no new object.
 
+        useMemo() - gives us the result of a function call, returns memoizes values, has dependency array like useEffect(), will usually be set to variable to memoize return value
+                -> useMemo() returns memoized result, while useCallback() returns memoized function, *both only run when their dependencies update
+            Uses for useMemo()
+                1) stop heavy code running on every re-render it must re run, this means every state change too! with an input, every letter type can slow us down!
+                2) check referential equality, {} === {} false, above we see how useEffect() with useState() could be running every render,
+                        -> even if it's array dependency is an object state that hasn't changed! remember, we set the object state to NEW reference object with same values
+
+                -> below we show how useMemo is used with useEffect as its dependency, to provide an reference if our array,object hasn't changed, where as before
+                    -> if we simply set a state that is array/obj as dependency for useEffect, it would NOT be the same reference
+                  const myArray = useMemo(() => getArray(), [] ) -> this memo has no dependency, now myArray holds the return of getArray and won't rerun on each render
+                    useEffect(() => {
+                        console.log("new array")
+                    }, [myArray])
 
 
 
 *  */
 
 
+function App() {
+
+    const [count, setCount] = useState({
+        num: 0
+    })
+
+    function changeItem() {
+        setCount(prev => {
+            return {...prev}
+        })
+    }
+
+
+
+    useEffect(() => {
+        console.log(count)
+    },[count])
+
+    return (
+        <div className="container">
+            <Fragment>
+                <div>{count.num}</div>
+                <button onClick={changeItem}>count up</button>
+            </Fragment>
+
+        </div>
+    )
+}
+
+
+
+
+
+/*
+form data list gen with submit button
 function App() {
     const [formData, setFormData] = useState({task: ""})
 
@@ -820,7 +882,7 @@ function App() {
                 formData
             ]
         })
-        // document.querySelector('input[type="text"]').focus();
+        setFormData({task: ""});
         document.querySelector('input[type="text"]').focus();
     }
 
@@ -846,8 +908,8 @@ function App() {
 }
 
 
-
-
+*
+*  */
 
 /* Box testing, local state and passed down state
 

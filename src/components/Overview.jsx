@@ -4,24 +4,17 @@ function Overview(props) {
 
      useEffect(() => {
         let sub = true;
-        try {
-            async function todos() {
+        async function todos() {
             let res = await fetch("https://jsonplaceholder.typicode.com/posts");
             let data = await res.json();
-                if (sub === true) {
-                     console.log(data)
+                if (sub) {
+                console.log(data)
                 }
         }
         todos()
-        } catch (err) {
-            if (err.name === "AbortError") {
-                console.log("fetch cancelled")
-            } else { //handle error other than abort
-                console.log("fetch error")
-            }
-        }
 
         return () => {
+            console.log("cancelled")
             sub = false;
         }
     }, [])

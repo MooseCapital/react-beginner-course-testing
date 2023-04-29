@@ -1,6 +1,7 @@
 import React, {useState, useEffect, Fragment} from 'react'
 import './App.css'
 import Overview from "./components/Overview.jsx";
+import TestComp from "./components/TestComp.jsx";
 
 
 /*
@@ -724,9 +725,74 @@ Practice review -
 
 
    */
+
+
 /*
 
 ** Advanced React Notes -           Thinking in react, planning app layout and where state should be held - https://react.dev/learn/thinking-in-react
+
+    Beginner Mistakes to avoid - https://piped.kavin.rocks/watch?v=Fhu5cu864ag&list=865d8065-2c21-473a-ae2f-84939591eff7&index=2
+               * ->when using a state, we should not set the state using the state variable, we use prevState passed in.
+                            const [num, setNum] = setState(0)
+                        -> if we use num inside setNum, between the 2 seconds it took to run, num could have already changed, it saves num when it's called not ran
+                            setTimeout(() => {
+                                setNum(num + 1)
+                            },2000)
+                       * -> we must use our callback that bob taught us in the course! Now it does not save old value when called, but the current state when ran.
+                            setNum(prev => prev + 1)
+
+               *  creating a blank state - we know we will add properties and data to a state later, but listing it in our jsx gives us errors on render, because it doesn't exist
+                       -> below span will break our page because the property on user does not exist, we have many fixes
+                                 const [user, setUser] = useState()
+                                 <span>username is:{user.name} <span/>
+                        1) use conditional rendering, first if we even want to render the element
+                           {user &&  <span>username is:{user.name} <span/>}
+
+                        2) conditional rendering, render element, but not info, no error
+                                <span>username is:{user && user.name} <span/>
+                            -> javascript gives us this condition already, with ? -> it says, if object/array does not exist, we verify it does before trying
+                                <span>username is:{user?.name} <span/>
+
+                      **3) Best option - create data type with blank values in state, so for object, we create the properties set to blank strings etc..
+                            -> this way, if we forget the conditional rendering (we will), we get no error!
+                                <span>profile picture is:{user.images[1]} <span/> -> simply gives blank for images
+                            const [user, setUser] = useState({name:"", email:"", images:[])
+
+                * when using a form, do not handle each inputs value in a separate state, we can hold them all in one single object state
+                    -> look at notes above in search to find
+                           const [formData, setFormData] = React.useState(
+                                {
+                                    firstName: "",
+                                    lastName: "",
+                                    email: "",
+                                    comments: "",
+                                    isFriendly: true,
+                                    employment: "",
+                                    favColor: ""
+                                }
+                            )
+
+                            function handleChange(event) {
+                                console.log(event)
+                                const {name, value, type, checked} = event.target
+                                setFormData(prevFormData => {
+                                    return {
+                                        ...prevFormData,
+                                        [name]: type === "checkbox" ? checked : value
+                                    }
+                                })
+                            }
+
+
+
+
+
+
+
+
+
+
+
 
     Keys - when rendering elements with data.map(item => <div key={id}> <div>) -> KEYS should be added in the data itself
             -> react does NOT recomment, using index in the array as the key, because if we filter, or an item changes in the array, index can change
@@ -840,43 +906,48 @@ Practice review -
                     }, [myArray])
 
 
+        Self closing Components (Children) - used to pass in JSX to children components, we keep and reuse our components style while changing it's elements
+            -> but just want to change a little of the elements inside
+                -> The standard way of using components is.. <TestComp/>  , but they can also be used like an element  <TestComp> </TestComp>
+
+            ->Anything put between the 2 Component tags are accessible in the component by -> props.children
+                -> instead of filling the component with HTML(JSX) elements, we now put {props.children} -> so all the elements are passed from the parent, so it's a dynamic style format
+                    -> we keep the style but use new/different elements!
+                    function TestComp(props) {
+                        return
+                            <div className={"container"}>
+                                {props.children}
+                            </div>
+                    -> we can't magically put JSX between <TestComp> </TestComp> and expect output.. We must specificy where by putting {props.children}
+                  * -> instead of simply passing DATA through props, we keep a parent format, while making it FULLY changeable with what's inside. Incredible!
+                        <TestComp><p>hi</p></TestComp>
+                      -> styles on all parents will be changed for every separate time the component is used even with different elements
+                       * -> Uses - sidebar, popup, we want same styles but different content when moving pages
+                            -> we must ask ourselves, what needs to be here hard coded for the component, and what is passed in by the user, can it be data in props
+                                    -> OR completely new elements they need to add
+
+
+          Higher Order Components - from reading around, people say these are obsolete with hooks, and overly complicated, we will learn anyway, but not too deep
+                    
 
 *  */
-
-
 function App() {
 
-    const [count, setCount] = useState({
-        num: 0
-    })
-
-    function changeItem() {
-        setCount(prev => {
-            return {num: prev.num + 1}
-        })
-    }
-
-    useEffect(() => {
-        return () => {
-
-        }
-    },[count.num])
-
-    const [getBox, setBox] = useState(false)
-    function testFetch() {
-        setBox(prev => !prev)
-    }
 
 
     return (
         <div className="container">
             <Fragment>
-                <div>{count.num}</div>
-                <button onClick={changeItem}>count up</button>
-                <button onClick={testFetch}>get box</button>
-                {getBox && <Overview></Overview>}
+                <TestComp >
+                    <p>you doing today?</p>
+                </TestComp>
+                <TestComp  >
+                 <p>you so good at react</p>
+                </TestComp>
+                <TestComp  >
+                 <p>sloths so slow</p>
+                </TestComp>
             </Fragment>
-
         </div>
     )
 }

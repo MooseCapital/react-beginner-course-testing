@@ -7,7 +7,7 @@ function TestComp(props) {
 
     return (
         <div className="test-container">
-            <p>how are</p>
+           <p>what is your name?</p>
             {props.children}
         </div>
     )

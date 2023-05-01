@@ -2,7 +2,16 @@ import React, {useState, useEffect, Fragment} from 'react'
 import './App.css'
 import Overview from "./components/Overview.jsx";
 import TestComp from "./components/TestComp.jsx";
+import HighOrder from "./components/HighOrder.jsx";
+import WithToggler from "./components/WithToggler.jsx";
 
+import LogRocket from 'logrocket';
+import RenderTest from "./components/RenderTest.jsx";
+import DataFetcher from "./components/DataFetcher.jsx";
+LogRocket.init('jgr5zk/beginner-learning-react');
+LogRocket.identify('jgr5zk', {
+  name: 'Moose Capital',
+});
 
 /*
 
@@ -923,37 +932,98 @@ Practice review -
                         <TestComp><p>hi</p></TestComp>
                       -> styles on all parents will be changed for every separate time the component is used even with different elements
                        * -> Uses - sidebar, popup, we want same styles but different content when moving pages
-                            -> we must ask ourselves, what needs to be here hard coded for the component, and what is passed in by the user, can it be data in props
-                                    -> OR completely new elements they need to add
+                            -> we must ask ourselves, what needs to be here hard coded for the component, what do we want the user to be able to modify
+                                    -> and if no modification, simply pass data through props to our already created elements, over new children passed
 
 
           Higher Order Components - from reading around, people say these are obsolete with hooks, and overly complicated, we will learn anyway, but not too deep
-                    
+                -> Bob taught us HOC's because when reading legacy code, we will surely come across these and must understand them!
+                    -> in App.jsx we write like normal, but now we have props passed down from the higher order function
+                        ->in App.jsx we also DON't export App, now  -> export default HighOrder(App)
+                    -> main.jsx imports App -> which really is importing the return function form higher order component
+                    -> which that higher order component now renders app with props passed in.. easy!
+                            export default function HighOrder(component) {
+                                let Comp = component;
+                                return function(props) {
+                                    return (
+                                        <Comp favNum={7} {...props}  />
+                                    )
+                                }
+                            }
+
+        rendering - another way to use Higher order components, it is not made inside react, people created this pattern on their own.
+                -> a cool use is our DataFetcher component, we use is, set the url to pass down, now we have a param holding all data returned
+                        ->and param state saying if we have the data or not.
+
+                -> This format is more confusing, but we simply return the new component we want, with our passed in fetch() data,
+                    -> so no re-writing if we need loads of fetches, with the same type of format!
+                    -> if we use no render prop. a component with our the fetching logic pre made would have the SAME HTML elements every time..
+                    -> and {props.children} would not work, if we place elements we want inside the <DataComponent><DataComponent/>
+                    -> because, that gives the same styling from DataComponent every time.. oof -> we want our OWN styling from every component and our own elements..
+                    -> BUT we want this reusable logic to make fetch EASY -> passing in render function lets us copy the logic easly, TAKE the style from the component we want
+                    ->  and, we get to create all new elements every time, it's a win win win
+                            <DataFetcher
+                                url={"https://swapi.dev/api/people/1/?format=json"}
+                                render={(fetchData, isLoaded) => {
+                                    console.log(isLoaded)
+                                   return (
+                                     <Fragment>
+                                         { isLoaded ? <GetRandomComponent!/>
+                                         : <h1>Loading...</h1>}
+                                    </Fragment>
+                                   )
+                                }}
+                            />
+
 
 *  */
-function App() {
-
+function App(props) {
 
 
     return (
         <div className="container">
-            <Fragment>
-                <TestComp >
-                    <p>you doing today?</p>
-                </TestComp>
-                <TestComp  >
-                 <p>you so good at react</p>
-                </TestComp>
-                <TestComp  >
-                 <p>sloths so slow</p>
-                </TestComp>
-            </Fragment>
+            <DataFetcher
+                url={"https://swapi.dev/api/people/1/?format=json"}
+                render={(data, isLoaded) => {
+                   return (
+                     <>
+                         {
+                         isLoaded ? <p>{data.name}</p>
+                         :  <h1>Loading...</h1>
+                         }
+                    </>
+                   )
+                }}
+            />
         </div>
     )
 }
 
 
 
+export default App
+
+
+
+
+
+/* render prop function- to create a format that lets us keep our components style & elements, while easily keeping render logic to not rewrite.
+
+
+<DataFetcher
+    url={"https://swapi.dev/api/people/1/?format=json"}
+    render={(data, isLoaded) => {
+       return (
+         <>
+             {
+             isLoaded ? <p>{data.name}</p>
+             :  <h1>Loading...</h1>
+             }
+        </>
+       )
+    }}
+/>
+*/
 
 
 /*
@@ -1137,4 +1207,9 @@ function App() {
     )
 } */
 
-export default App
+
+
+
+
+
+

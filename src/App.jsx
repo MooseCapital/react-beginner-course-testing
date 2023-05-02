@@ -4,14 +4,10 @@ import Overview from "./components/Overview.jsx";
 import TestComp from "./components/TestComp.jsx";
 import HighOrder from "./components/HighOrder.jsx";
 import WithToggler from "./components/WithToggler.jsx";
+import Grandparent from "./components/Grandparent.jsx";
 
-import LogRocket from 'logrocket';
-import RenderTest from "./components/RenderTest.jsx";
-import DataFetcher from "./components/DataFetcher.jsx";
-LogRocket.init('jgr5zk/beginner-learning-react');
-LogRocket.identify('jgr5zk', {
-  name: 'Moose Capital',
-});
+
+
 
 /*
 
@@ -976,25 +972,99 @@ Practice review -
                             />
 
 
-*  */
+
+    *Performance Optimizing section - Bob showed us a huge Tree  App < Grandparent < parent < child  -> in this example, if we have state change in App, and none of the child components
+                -> depend on the state, they will ALL still re-render because state changed at the very top, once we localize state where it is, such as parent
+                    ->Then only that parent and lower components, such as <child will re-render. app and grandparent do not, because they are higher
+                -> we will learn how to optimize performance and say when we want to re-render rather than rendering everything below on every state change
+
+
+            shallow comparison - remember how primitives are compared by value, 1 === 1 -> true.. while arrays, objects are compared by REFERENCE.
+                        -> {} === {} -> false, because they take up different places in memory, even with the same value.
+                        -> remember deep cloning? we have this issue again when holding data in states
+                                people={
+                                    person: {name:"bob}
+                                }
+                        -> simply comparing people.person === people.person2, will give false, because 2 objects have separate references..
+                        -> the same goes for arrays, const arr1 = [1,2,[3]]
+                        -> const arr2 = [1,2,[3]]  , arr1[2] === arr2[2]  , false -> we use triple equal sign comparison to get shallow comparison for primitives, but can't use
+                            -> the same triple equals === for objects, arrays, as we see above, but now we know how nested objects/arrays are considered shallow equal or not!
+
+                        shouldComponentUpdate() - Bob says we will never use this, but need it to understand purecomponent and useMemo()
+                                    -> lifecycle method on Class components, we use function components now that made class obsolete.
+                                    -> determines if component should update or not
+                                    -> receives upcoming props & state to compare against previous props & state
+                                    -> return true, then should update, false, then no update
+
+
+                            PureComponent(Class based, obsolete) - alternative to React.Component() -> class component, not functional
+                                    -> automatically impliments shouldComponentUpdate() for shallow props & state comparisons
+                                    -> disallows using shouldComponentUpdate() manually and preferred over it.
+                                    -> skips rendering all children in the tree automatically, they must be pure as well
+                                    -> since it skips rendering automatically, a state change in App will not affect grandparent, UNLESS we pass our state down to grandparent,
+                                        -> and grandparent auto handles that state prop coming in, sees it changed, and re-renders for us
+                                    It is only when we pass the state down, that PureComponent (class component) sees a change and re-renders, by default we don't run again!! woo
+                                        in App     <Grandparent count={count}></Grandparent>
+
+                                                    class Grandparent extends PureComponent{
+                                                        render() {
+                                                            console.log("gp rendered")
+                                                            return (
+                                                                <Fragment>
+                                                                    <div>grandparent</div>
+                                                                </Fragment>
+                                                            )
+                                                        }
+                                                    }
+                                    --> Now App.jsx passes count to Grandparent comp.. but all Grandparents children render as well, we only want App and GP to render, not parent.. child..
+                                        -> solution: make the direct child of Grandparent PureComponent as well, to not re-render it. now we get App & Gp rendering only
+
+                                    *-> Remember, the whole reason we do this, is to prevent all of the children re-rendering (heavy resources) on every little state change like count
+                                            -> at the very top level, unless we pass it down as a prop
+                                         -> by default, leave components normal, and log to see if it is running when we dont want the child to. If we optimize before seeing slow issues
+                                            -> this would simply waste time, build the app then optimize!
+
+            Memoizing https://attardi.org/why-we-memo-all-the-things/  ,
+                React.memo() - Higher order component made by react, for functional components. The replacement for PureComponent but for functional Components
+                            -> only compares previousProps and nextProps, no state checking
+                            -> we can optionally make our own checking function, to determine if it should use the memoized result
+                            -> check function: return true if props equal, false if not. This controls if react re-renders the component
+                                ->we pass this function as 2nd argument to React.memo() ,the first argument is the actual component, that we export as a Higher order Comp like before
+                             ->by default, with no check function, we use SHALLOW comparison, to get more advanced we create our own
+                                 export default React.memo(Grandparent, areEqual);
+                                    function areEqual(prevProps, nextProps) {
+                                        console.log({prevProps, nextProps})
+                                        if (prevProps.count.num === nextProps.count.num) {
+                                            return true
+                                        } else
+                                            return false
+                                        }
+
+                                    }
+                            *** -> we must use our own custom checker function when the data type is object or array, because the referential equality will change each time
+                                ->this change would cause the re-render even if our state props value is the same, as in no change, but still shows change..
+                                    -> so we see above, we access that by prevProps.state.num -> above to check if they equal, now DEEP equality check!
+                                       -> do not forget, we must pass down the prop in the first place to check it for change,
+                                            ->and if none passed down, we never re-render when parent above re-renders, because were not using a prop's changing data anyway
+
+                                -> When to use React.memo(comp,checker) - * remember build first, think about optimizing later or when our app is incredibly slow
+                                    1) render cost is high and uses many resources on child
+                                    2) we render with the same props passed down and our app is slowed significantly 100ms
+
+
+
+
+
+  */
 function App(props) {
+    const [count, setCount] = useState({num: 0, name: "bob"})
 
 
     return (
         <div className="container">
-            <DataFetcher
-                url={"https://swapi.dev/api/people/1/?format=json"}
-                render={(data, isLoaded) => {
-                   return (
-                     <>
-                         {
-                         isLoaded ? <p>{data.name}</p>
-                         :  <h1>Loading...</h1>
-                         }
-                    </>
-                   )
-                }}
-            />
+            <div>{count.num}</div>
+            <button onClick={() => setCount(prev => ({...prev, num: prev.num + 1}))}>count</button>
+            <Grandparent  count={count}></Grandparent>
         </div>
     )
 }

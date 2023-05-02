@@ -15,7 +15,7 @@ function DataFetcher(props) {
                 //set state with data
                 setData(data1)
                 setIsLoaded(true)
-                console.log(data1);
+
             }
         }
         getStuff()

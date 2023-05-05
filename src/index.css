@@ -1,97 +1,85 @@
 :root {
-  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
-margin: 0;
-  font-weight: 400;
-  font-size: 16px;
-  /*color-scheme: light dark;*/
-  /*color: rgba(255, 255, 255, 1);*/
-  color: black;
-  padding: 0;
-  box-sizing: border-box;
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  -webkit-text-size-adjust: 100%;
+ margin: 0 auto;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Rubik, serif ;
+    color: #2e3440;
+    font-weight: 500;
+    font-size: 18px;
+    -webkit-text-size-adjust: 100%;
+    height: 100%;
 }
+@font-face {
+    font-family: "Rubik";
+    src: url("/Rubik-VariableFont_wght.ttf") format("woff2");
+}
+/*remember we set height, but if we set width, it does not take into account the scrollbar 10px, this creates horizontal scroller on the bottom
+    the solution is to not set width anywhere and it defaults, or set auto only, but we should set height. if we do set width, choose 100% over 100vw
+        to avoid surprise scrollbars   https://www.freecodecamp.org/news/html-page-width-height/        https://css-tricks.com/the-lengths-of-css/
+                            https://www.nordtheme.com/
+*/
 
 
-h1,h2,h3,h4,h4,h5,h6,p,div {
-margin: 0;
+html, body, #root, #container{
+  height: 100%;
+  margin: 0;
 padding: 0;
 }
 
-h1 {
-  font-size: 2rem;
-  line-height: 1.1;
-}
-
-button {
-
-
-
-
-  font-family: inherit;
-  background-color: white;
-  /*border-radius: 2px;*/
-  padding: 5px 10px;
-  cursor: pointer;
-  margin: 3px;
-  width: max-content;
-  /*transition: border-color 0.25s;*/
-}
-button:hover {
-  /*border-color: #646cff;*/
-  background-color: aliceblue;
-}
-button:focus,
-button:focus-visible {
-
-}
-
-@media (prefers-color-scheme: light) {
-  :root {
-    /*color: #213547;*/
-    /*background-color: #ffffff;*/
-  }
-
-  button {
-    /*background-color: #f9f9f9;*/
-  }
-}
-
 * {
-box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Rubik, serif ;
+    /*color: rgb(236, 239, 244);*/
 }
+
 
 body {
-  margin: 0;
-  /*display: flex;*/
-background-color: #D8DEE9;
-/*padding: 10px;*/
-/*height: 100vh;*/
-/*justify-content: center;*/
+    margin: 0 auto;
+    padding: 0;
+    /*background-color: #2e3440;*/
 }
 
-.container {
+button{
+border: 1px solid #2e3440;
+background-color: #4c566a;
+padding: 0.3rem 1.5rem;
+width: max-content;
+font-weight: 600;
+font-size: 16px;
+color: #88c0d0;
+border-radius: 3px;
+transition: transform 100ms ease-in-out;
+/*margin-top: 1rem;*/
+cursor: pointer;
+margin: 5px;
+}
+button:hover  {
+cursor: pointer;
+}
+button:active {
+background-color: rgb(67,76,94, 0.9);
+}
+#root {
 
-height: 100%;
+}
+#container {
 display: flex;
 flex-direction: column;
-/*background-color: #4C566A;*/
-padding: 5px;
-
+background-color: #d8dee9;
+padding: 10px;
+color: #2e3440;
 }
-form {
+.row{
+display: flex;
+flex-direction: row;
+}
+.col {
 display: flex;
 flex-direction: column;
+margin: 5px;
 }
-input[type="text"] {
-width: 150px;
-
-
-}
-
 .square {
 background-color: #b48ead;
 height: 100px;
@@ -107,14 +95,26 @@ margin: 5px;
 }
 
 
+.light-mode {
+background-color: white;
+color: #2e3440;
+border-radius: 3px;
+padding: 3px;
+display: flex;
+flex-direction: column;
+}
+.dark-mode {
+color: rgb(236, 239, 244);
+background-color: #2e3440;
+border-radius: 3px;
+padding: 3px;
+display: flex;
+flex-direction: column;
+}
 
+.square {
 
-
-
-
-
-
-
+}
 
 
 

@@ -972,6 +972,97 @@ Practice review -
                             />
 
 
+        Managing state - https://react.dev/learn/managing-state
+                    Reacting to input with states - in forms we may have different styles such as when the user is.. empty = disabled submit, typing, submitting, success, failure https://react.dev/learn/reacting-to-input-with-state
+                                1) identify all the components visual states
+                                2) determine human and computer triggers for state changes
+                                3) model state with useState()
+                                4) remove non essential state to avoid bugs
+                                5) connect event handlers to set state
+
+                    Choosing state structure - a component can be easy to modify and debug or a pain, this is how we do it easily
+                            1) Group related state: if we update 2 or more states at a time, consider an object to merge that state easy
+                            2) avoid contradictions, states that disagree with eachother: when we have 2 or more options, instead of boolean, make it a string and test ===
+                            3) avoid redundant state: if we have firstname & lastname in state, in render we want fullname. do NOT make fullname state, simply add the 2 values
+                            4) avoid duplication: the same data in multiple state variables makes it hard to keep them in sync
+                            5) avoid deeply nested state: it is hard to update, simple properties in an object is good for us.
+
+                    Sharing state between components - we usually move the state up and pass it down to both
+
+                    Preserving and resetting state - React keeps track of which state belongs to which component based on their place in the UI tree https://react.dev/learn/preserving-and-resetting-state
+                            -> we create a component, but render it many times, now we have 3 <count/> components on the page
+                                -> React is going to give every new count component it's own counting state, so a click on count1 does not add to count 2,3
+
+                            -> we set counter state on 2 components, but a checkbox will conditionally render one of the counts, which deletes it until it's clicked again
+                                    <Counter />
+                                     {showB && <Counter />}
+                            ->  when React REMOVES a component, it destroys its state, so we get the state resetting on counter #2, back to 0, while the first continues normally
+
+                            -> The conditional render above actually removes it, in our example below, we also conditionally render, BUT we always have at least one component
+                                  {    isFancy ?  <Counter isFancy={true} /> : <Counter isFancy={false} />     }
+                                    -> It’s the same component at the SAME position, so from React’s perspective, it’s the same counter. Which keeps the state the same and counting!
+                                    ->  remember that it’s the POSITION in the UI tree—not in the JSX markup—that matters to React! component in same place = same state
+
+                            -> only when that component is deleted, does react reset its state, in above react still rendering one each time, not completely deleting it on render
+                                        {isFancy ? (
+                                            <div>
+                                              <Counter isFancy={true} />
+                                            </div>
+                                          ) : (
+                                            <section>
+                                              <Counter isFancy={false} />
+                                            </section>
+                                 -> When the child div was removed from the DOM, the whole tree below it (including the Counter and its state) was destroyed as well.
+                                    ->although we render the same counter, the first element inside the main div is now, div -> section, which deletes everything below
+
+                         ** ->As a rule of thumb, if you want to preserve the state between re-renders, the structure of your tree needs to “match up” from one render to another.
+                                ->If the structure is different, the state gets destroyed because React destroys state when it removes a component from the tree.
+
+
+                            -> we saw a component function be inside another component, which means, every re-render of the main component, re-runs the child components code
+                                    -> This effectively deletes it, makes a new component, which means.. new state reset
+                            *-> always declare component functions at the top level, and don’t nest their declarations. we usually don't do this, because we put components in
+                                    -> their own file, and import it, which is great! but loads of files. we could simply put those in the same top level comp file,
+
+
+                     *   When we want to specifically reset a state in the SAME position: get a unique state for a component in the exact same position
+                            -> The two Counters appear in the same position, so React sees them as the same Counter whose prop has changed.
+                            -> but we want 2 separate components with 2 separate states, even though they are in the same UI position
+                                  countState ? <Count class={"dark-mode"}/> : <Count class={"light-mode"}/>
+
+                            There are 2 ways to get separate states:
+                              1)  Render components in different positions - even though they may look the same below, we are deleting one in 1st position and re-adding in 2nd
+                              2)  Give each component an explicit identity with key
+
+                                Render in different positions - unlike the ternary above, doing conditional this way does create a new state for each div,
+                                        -> even though it doesn't move in the UI, Count1 gets destroyed and Count2 gets added. vs above where react doesn't see it that way
+                                       {countState && <Count class={"dark-mode"} /> }
+                                       {!countState && <Count class={"light-mode"} /> }
+
+                                Keys - they aren't just for list! when specifying a key -> react uses the key instead of position in the UI like above
+                                    -> even though they render in the same place, react sees 2 separate counts that do NOT share state.
+                                                countState ? <Count key={"dark"} class={"dark-mode"}/> : <Count key={"light"} class={"light-mode"}/>
+
+                                  * we must remember, even if it looks comlicated, react sees these braces as a "position" taken, even if the UI looks blank
+                                        {countState && <Count class={"dark-mode"} /> }
+                                        <div/>
+                                    -> our div will not move, even if countState is false and we render NOTHINg, moving it's UI position, react sees braces taking up position #1
+                                    -> in our ternary solution, we keep the same state because there are no braces at all taking up positions
+                                        countState ? <Count class={"dark-mode"}/> : <Count class={"light-mode"}/>
+
+
+
+
+            useReducer() - replaces state, but more complicated to write and handle https://react.dev/reference/react/useReducer
+                Moving state logic into a reducer - our state could be edited with map, added to with {...task, {new}} , or deleted with filter method
+                    -> we have 3 different actions here, on different event listeners, which means making 3 separate times to call setState() in each
+                    -> a reducer will make this shorter and put all our logic in one place
+                    -> when using Context, we put state in the context component file to access anywhere without props..
+                        ->using a reducer allows us to set the value={reducer} now we never look at that file again, write all state that needs passing deeply in reducer file!
+                        -> or state that has multiple actions like a setState() on 3 different functions. reduce it!
+
+
+
 
     *Performance Optimizing section - Bob showed us a huge Tree  App < Grandparent < parent < child  -> in this example, if we have state change in App, and none of the child components
                 -> depend on the state, they will ALL still re-render because state changed at the very top, once we localize state where it is, such as parent
@@ -1053,18 +1144,50 @@ Practice review -
 
 
 
+        *Context - In react, data flows downwards, as in our props. Bob showed us the tree with 5 layers, because data flows down, we can't easily move a
+                    -> a state to a sibling element, we have to move it up to the parent, and pass it down. easy enough, until we need it on another branch
+                        -> just to pass props to a component 4 layers deep. Now state must be at the very top App. and we pass it through many props that don't even need it
+                        -> This props pass through is called "drilling"
 
+                    *-> Context solves the problem easily - it lets us easily pass props down to a component, without having to pass it manually through each level
+                        ->that doesn't use it, to reach the component that needs it.
+
+                    -> we get a context.provider and useContext(), which tells where state is held and who it can be DIRECTLY passed to without going through others components
+                      -> create a file for the Provider, instead of wrapping App in this, we pass it by using props.children, wrapping it in our custom component here..
+                                const ThemeContext = React.createContext({});
+
+                                    function ThemeContextProvider(props) {
+                                        const [mode, setMode] = useState(false)
+                                        return (
+                                            <ThemeContext.Provider value={{mode, setMode}}>
+                                                {props.children}
+                                            </ThemeContext.Provider>
+                                        )
+                                    }
+                                    export  {ThemeContextProvider, ThemeContext}
+                        -> we set all our state in this component, and pass with value, easy!
+                       -> Now in main.jsx we import it, in braces! we are not using default import because we need the component and the context to use
+                                <ThemeContextProvider>
+                                    <App/>
+                                </ThemeContextProvider>
+                        -> any component we want to access, no matter how deep. we simply use, and access that state with Theme.mode & Theme.setMode . were DONE!
+                            const Theme = useContext(ThemeContext)
+                             <div className={Theme.mode ? "dark-mode" : "light-mode"}>child</div>
+                             <button onClick={() => Theme.setMode(prev => !prev)}>set Theme</button>
+
+                        -> React itself has said we should try to use props always because context everywhere will not be as easy, but of course a big project should useContext
+                        * -> we tried not having to render {props.children} in ThemeContext file, if we don't do this, and simply import it to main.jsx
+                                ->main.jsx won't let us make a state in the open, since it has no function to put it inside, so use the format above!!
 
   */
+
+
 function App(props) {
-    const [count, setCount] = useState({num: 0, name: "bob"})
 
 
     return (
-        <div className="container">
-            <div>{count.num}</div>
-            <button onClick={() => setCount(prev => ({...prev, num: prev.num + 1}))}>count</button>
-            <Grandparent  count={count}></Grandparent>
+        <div id="container">
+            <Grandparent/>
         </div>
     )
 }

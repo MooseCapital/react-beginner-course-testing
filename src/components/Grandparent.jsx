@@ -1,26 +1,39 @@
-import React, {Fragment, memo} from "react";
+import React, {Fragment, memo, useContext} from "react";
+import Parent from "./Parent.jsx";
+import {AllContext} from "./ContextProvider.jsx";
 
 function Grandparent(props) {
 
 
-    console.log("👴 rendered")
+        const user = useContext(AllContext)
+
         return (
-            <Fragment>
+            <div >
                 <div>grandparent</div>
-            </Fragment>
+                <div className={"dark-mode"}>welcome {user.userName}</div>
+                <div className={"light-mode"}>no new notifications for: {user.userName}</div>
+
+                <div className="row">
+
+                    <Parent></Parent>
+                </div>
+
+            </div>
         )
 }
 
+
+export default Grandparent
+
+
+/*
 function areEqual(prevProps, nextProps) {
     console.log({prevProps,nextProps})
-    if (prevProps.count.num === nextProps.count.num) {
+    if (prevProps.count.name === nextProps.count.name) {
         return true
     } else {
         return false
     }
 
 }
-
-export default React.memo(Grandparent, areEqual)
-
-
+*/

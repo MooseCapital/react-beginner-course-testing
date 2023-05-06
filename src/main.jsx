@@ -14,10 +14,10 @@ LogRocket.identify('jgr5zk', {
 
 ReactDOM.createRoot(document.getElementById('root')).render(
     <React.StrictMode>
-        <ContextProvider>
+
             <App/>
-        </ContextProvider>
-    </React.StrictMode>,
+
+    </React.StrictMode>
 )
 
 

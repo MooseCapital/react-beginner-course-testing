@@ -11,7 +11,7 @@
 }
 @font-face {
     font-family: "Rubik";
-    src: url("/Rubik-VariableFont_wght.ttf") format("woff2");
+    src: url("public/Rubik-VariableFont_wght.ttf") format("woff2");
 }
 /*remember we set height, but if we set width, it does not take into account the scrollbar 10px, this creates horizontal scroller on the bottom
     the solution is to not set width anywhere and it defaults, or set auto only, but we should set height. if we do set width, choose 100% over 100vw
@@ -59,7 +59,10 @@ button:hover  {
 cursor: pointer;
 }
 button:active {
-background-color: rgb(67,76,94, 0.9);
+background-color: rgb(67,76,94, 0.8);
+}
+button:disabled {
+background-color: rgb(67,76,94, 0.4)
 }
 #root {
 
@@ -78,7 +81,6 @@ flex-direction: row;
 .col {
 display: flex;
 flex-direction: column;
-margin: 5px;
 }
 .square {
 background-color: #b48ead;
@@ -115,9 +117,18 @@ flex-direction: column;
 .square {
 
 }
-
-
-
+textarea {
+width: 400px;
+background-color: #eceff4;
+padding: 5px;
+}
+textarea:disabled {
+background-color: rgb(236, 239, 244, 0.7);
+cursor: not-allowed;
+}
+textarea:focus {
+background-color: rgb(163, 190, 140,0.4);
+}
 
 
 

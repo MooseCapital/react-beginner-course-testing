@@ -1179,15 +1179,75 @@ Practice review -
                         * -> we tried not having to render {props.children} in ThemeContext file, if we don't do this, and simply import it to main.jsx
                                 ->main.jsx won't let us make a state in the open, since it has no function to put it inside, so use the format above!!
 
+
+        *Hooks -   So far we've used useState, useEffect, useContext (to pass props without drilling far below for context).    We use React.memo to optimize if a component
+                    -> should render or not, to prevent excessive rendering when it's not dependant on anything above..
+                    -> later we will use useMemo() like React.memo() but useMemo() memoizes data
+
+            useRef()
+
+
+
+
+
+
   */
 
 
 function App(props) {
 
+    const STARTING_TIME = 5;
+
+    const [textData, setTextData] = useState("")
+    const [timeRemaining, setTimeRemaining] = useState(STARTING_TIME)
+    const [isStarted, setIsStarted] = useState(false)
+    const [wordCount, setWordCount] = useState(0)
+    const [buttonDisabled, setButtonDisabled] = useState(false)
+
+    useEffect(() => {
+      if (timeRemaining > 0 && isStarted) {
+          setTimeout(() => {
+                setTimeRemaining(prev => prev - 1)
+            }, 1000)
+      }
+      if (timeRemaining <= 0) {
+        endGame();
+        //disable text area, which halts running handle and counting more words, we can set boolean state inside element, no queryselector!
+      }
+
+    }, [timeRemaining, isStarted])
+
+    function startGame() {
+        //disable button until time = 0
+        setIsStarted(true)
+        setButtonDisabled(true)
+        setTextData("");
+        setTimeRemaining(STARTING_TIME)
+
+    }
+
+    function endGame() {
+        setIsStarted(false)
+        setWordCount(getWordCount(textData))
+        setButtonDisabled(false)
+    }
+
+    function handleChange(event) {
+        setTextData(event.target.value);
+    }
+
+    function getWordCount(word) {
+        const wordArr = word.trim().split(" ");
+        return wordArr.filter(word => word !== '').length
+    }
 
     return (
         <div id="container">
-            <Grandparent/>
+            <h1>Typing speed game</h1>
+            <textarea name="words" id="" cols="30" rows="10"  value={textData} onChange={handleChange} disabled={!isStarted}/>
+            <h4>Time remaining: {timeRemaining}</h4>
+            <button onClick={startGame} disabled={isStarted} >start game</button>
+            <h2>word count: {wordCount}</h2>
         </div>
     )
 }
@@ -1195,7 +1255,6 @@ function App(props) {
 
 
 export default App
-
 
 
 

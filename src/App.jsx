@@ -1,10 +1,23 @@
-import React, {useState, useEffect, Fragment} from 'react'
+import React, {useState, useEffect, Fragment, useRef} from 'react'
 import './App.css'
 import Overview from "./components/Overview.jsx";
 import TestComp from "./components/TestComp.jsx";
 import HighOrder from "./components/HighOrder.jsx";
 import WithToggler from "./components/WithToggler.jsx";
 import Grandparent from "./components/Grandparent.jsx";
+import useCounter from "./hooks/useCounter.jsx";
+import useTypingGame from "./hooks/useTypingGame.js";
+import {Link, Route, Routes, BrowserRouter as Router} from "react-router-dom";
+import HomeRouterTest from "./components/HomeRouterTest.jsx";
+import RoutesHeader from "./components/RoutesHeader.jsx";
+import ProfileRoute from "./components/ProfileRoute.jsx";
+import SettingsRoute from "./components/SettingsRoute.jsx";
+import InfoRoute from "./components/InfoRoute.jsx";
+import settingsRoute from "./components/SettingsRoute.jsx";
+import infoRoute from "./components/InfoRoute.jsx";
+import ServicesList from "./components/ServicesList.jsx";
+import ServiceDetail from "./components/ServiceDetail.jsx";
+
 
 
 
@@ -1181,75 +1194,155 @@ Practice review -
 
 
         *Hooks -   So far we've used useState, useEffect, useContext (to pass props without drilling far below for context).    We use React.memo to optimize if a component
-                    -> should render or not, to prevent excessive rendering when it's not dependant on anything above..
+                    -> should render or not, to prevent excessive rendering when it's not dependent on anything above..
                     -> later we will use useMemo() like React.memo() but useMemo() memoizes data
 
-            useRef()
+            useMemo() - useMemo is for returning a memoized value, useCallback is for returning a memoized function
+                -> remember React.Memo() , we optimize and see if we want to stop re-rendering unless certain prop is changed
+                -> the same is for useMemo(), stop re-render unless certain thing is changed, so we don't have to recalculate heavy intensive function
+               * use if page is taking significant time to load like 1ms per call, don't useMemo by default, quite often code without memoization is fine
+
+            useCallback()
+
+                            https://react.dev/reference/react/useRef
+            useRef() -  it is not just for changing jsx elements, we can keep data between renders, unlike useState, changes in your useRef "box" does not trigger a new render.
+                    reasons to use:
+                    1)grabbing jsx elements to do html dom event on. focus(), innerText.. etc
+                    2) hold values between rendering, changing it's value does not re-render
+                    3) with those unchanging values, we could hold props, then since it doesn't change. on re-render we compare the old props to new
+                    4) when you want to track a value that's unique to a component instance but you don't want React to necessarily be notified when it updates.
+
+                    -> This can be useful when we need to keep a reference, but NOT render that value to the screen, since it won't cause a re-render
+                        -> like our timer, imagine if we didn't want to show the countdown, but of course, we need to store the time left somewhere!
+                        -> see how many times a button is clicked, if we use state to set this, then our page would re-render every time, now we simply track the values,
+                        ->   with no change to the page ref.current += 1;
+                    ->we want to imperatively grab a jsx element, in javascript we would do querySelector() or grab by ID. In react if we reuse this component..
+                        -> creating more of this component would mess up, because we'd copy the id/class and it wouldn't know which one to select. so useRef()
+                        -> is going to let us grab elements in React, so we can do things to it, remember .focus() to focus into input on button click
+                        To use:
+                    const inputRef = useRef(null)    -> this creates the ref, now put the variable name inside the jsx element
+                    <input ref={textRef} type="text"/>    -> give the element the ref attribute with the matching variable used for useRef
+
+                    -> now we can access the element in react by inputRef.current   , since inputRef is now an object holding the element in current property
+                    -> since ref attribute on html is used, we replace the useRef(null) value with it, if none is used, that's when we'd use the value on creation useRef(0)
+                    -> simply use our javascript methods on the element now, inputRef.current.focus()
+                    -> useRef() will show undefined for the first render, but not when inside a useEffect(), it will work the first time, be mindful of this
+
+                    -> in the future, we may need to hold variables that do NOT re-run the component, like a variable. useRef is better than a simple variable though
+                        -> multiple instances of the same component using regular variables will NOT isolate their values. useRef does separate those values. so it's our default
+                        -> when we don't want to reload and can't use useState()
+
+
+            Custom Hooks - don't repeat yourself, if we want to reuse a counter, we need it's state and function to count up. we don't want to copy paste this is all new components
+                    -> we could make a higher order component , but this is more complicated. we simply make a custom Hook that has all count logic in it
+                    Convention: name file starts with "use" -> useCounter.jsx and function
+                        -> we do NOT import react because there is no jsx inside custom hooks
+                            function useCounter() {
+                                const [count, setCount] = useState(0)
+                                function countUp() {
+                                    setCount(prevState => prevState + 1)
+                                }
+                                return {count, countUp}
+                            }
+                            export default useCounter
+
+                    To use this inside our component now - we destructure it so it's only called once, and state is created once, and we don't have to call it each time!
+                    const {count, countUp} = useCounter()
+                    -> now use it like normal, onClick={countUp}    &  <div>counter:{count}</div>
+
+              **  -> notice we return an object, {count, countUp} -> because of this, objects are named by property, so the user using our custom hook must destructure exactly
+                -> whereas, if we destructured an array return [count, countUp] -> the user could rename those anything they wanted on import, because arrays are named by index
+                    -> [num, countNumbersUp] = useCounter()   -> array should be for a few items only, if using many, object is better
+
+                -> previously we thought separating logic was for components, but that is for JSX not necessarily the javascript
+                    -> now with custom hooks, we can hold all our hooks and javascript separately from the component, so it's short and neat
+                    -> then simply import that custom hook logic to the component, this is not best practice because our typing game is not reused, we're just
+                    -> offloading logic elsewhere so the actual component looks very neat and in 1 single hook line, now just save the jsx for later!
 
 
 
+    * React Router - way to render single page websites, conditionally render large parts of your page, Declarative API, It's own Hooks  https://reactrouter.com/en/main
+            * - remember when we learn NextJS it will replace router, but if using react without server side rendering, we need router for multi page websites
+            The O.G. way - We make request to server, and get index.html -> navigate to about page -> make another request to server for about.html
+            The React way - Single page application -> make request to server, -> get entire react App -> navigate to about page -> react gets that, no more server request
+                ->for example, our header and footer can be the same on each page, now react shows us different content component in the middle on page change, no server request
 
+            -> we need a dependency, then need to import, ->
+                 npm install react-router-dom
+                 import {BrowserRouter as Router} from "react-router-dom"
+            -> we rename as router because it is commonly used. now 'router' is a useContext provider, remember wrapping App component with our context in main.jsx
+                -> or we could put Router inside the App return jsx itself
+                 <React.StrictMode> <Router> <App/> </Router>  </React.StrictMode>
+
+        v6 Updates:  https://reactrouter.com/en/main/upgrading/v5    instead of <Switch> wrapping our Route, we use <Routes> </Routes> to wrap <Route>
+                <Route> now uses element attribute over render,  <Route path={"/"} element={<h3>Home page</h3>}/>
+
+            Components:
+                Link - has required "to" attribute, to where it sends us, "/" is the home, "/about" changes the domain to.. /about page
+                        -> Link under the hood, is an <a> anchor tag in html for styling. this links to .. links normally like we've done
+                        <Link to={"/about"}>about</Link>
+                    -> router v6 no longer needs 'exact' attribute to specify home, because all paths are Relative, so it auto does it for us
+                    -> Link to somewhere, must have a Route with a path to an element. Here is standard v6 setup
+
+                        import {Link, Route, Routes, BrowserRouter as Router} from "react-router-dom";
+                           <Link to={"/"}>Home</Link>
+                            <Link to={"/about"}>about</Link>
+                            <Routes>
+                                <Route path={"/"} exact element={<HomeRouterTest/>}/>
+                                <Route path={"/about"} element={<h3>about page</h3>}></Route>
+                            </Routes>
+
+                    -> we either want nested routes to show over the original route before it, or ADD onto it, usually we want a whole new page and elements
+                            -> this has us putting the nested route in the original single routes element on App, if we want to add on, make a new routes element in the component
+
+                Dynamic routes - we create a new route that lets us handle any new routes created on a path now our route does not have to be exact because we can't know all of them
+                        -> this will work and /services/:Id  will allow any text or number there and matches to a link we create
+                        <Route path={"/services/:serviceId"} element={<ServiceDetail/>}/>
+
+                                        remember the old way, making elements from data array with map, now we can add links to those elements
+                                                const services = servicesData.map(item => {
+                                                    return (
+                                                        <Fragment key={item._id}>
+                                                            <Link to={`/services/${item._id}`}>{item.name}</Link>
+                                                            <p>price: {item.price}</p>
+                                                        </Fragment>
+                                                    )
+                useParams()
+                    -> inside the component Service Detail above, we need to match the component with the route, router gives us useParams for this
+                    -> now we rendered an element from data that gives each element a link, and dynamic routes lets each link have a route on command
+                    -> useParams lets us see in the Route element above, <ServiceDetail/> inside, we now can access the :serviceId
+                    -> inside <ServiceDetail/> we need to match it's particular data with the id we get from the link and useParams :serviceId
+
+                    The solution with a database would be making a fetch to match the id passed on the route.. in the pages path! and matching it in the databse
+                        -> were just using local data, the solution involved array.find() -> like filter but returns the first item that meets a condiiton
+                             const param = useParams();
+                             const thisService = servicesData.find(service => service._id === param.serviceId )
+                        -> we import param, now inside ServiceDetail component, match id made from ServiceList Link
+                        -> now we have access to all things matching the id in the link and can use its data on the page, it's returned inside: thisService
 
 
   */
 
-
 function App(props) {
 
-    const STARTING_TIME = 5;
 
-    const [textData, setTextData] = useState("")
-    const [timeRemaining, setTimeRemaining] = useState(STARTING_TIME)
-    const [isStarted, setIsStarted] = useState(false)
-    const [wordCount, setWordCount] = useState(0)
-    const [buttonDisabled, setButtonDisabled] = useState(false)
+return (
 
-    useEffect(() => {
-      if (timeRemaining > 0 && isStarted) {
-          setTimeout(() => {
-                setTimeRemaining(prev => prev - 1)
-            }, 1000)
-      }
-      if (timeRemaining <= 0) {
-        endGame();
-        //disable text area, which halts running handle and counting more words, we can set boolean state inside element, no queryselector!
-      }
+    <div className={"col"}>
+        <RoutesHeader/>
 
-    }, [timeRemaining, isStarted])
 
-    function startGame() {
-        //disable button until time = 0
-        setIsStarted(true)
-        setButtonDisabled(true)
-        setTextData("");
-        setTimeRemaining(STARTING_TIME)
-
-    }
-
-    function endGame() {
-        setIsStarted(false)
-        setWordCount(getWordCount(textData))
-        setButtonDisabled(false)
-    }
-
-    function handleChange(event) {
-        setTextData(event.target.value);
-    }
-
-    function getWordCount(word) {
-        const wordArr = word.trim().split(" ");
-        return wordArr.filter(word => word !== '').length
-    }
-
-    return (
         <div id="container">
-            <h1>Typing speed game</h1>
-            <textarea name="words" id="" cols="30" rows="10"  value={textData} onChange={handleChange} disabled={!isStarted}/>
-            <h4>Time remaining: {timeRemaining}</h4>
-            <button onClick={startGame} disabled={isStarted} >start game</button>
-            <h2>word count: {wordCount}</h2>
+            <Routes>
+                <Route path={"/"} element={<HomeRouterTest/>}/>
+                <Route path={"/services"} element={<ServicesList/>}/>
+                <Route path={"/services/:serviceId"} element={<ServiceDetail />}/>
+
+            </Routes>
+
         </div>
-    )
+    </div>
+)
 }
 
 
@@ -1258,6 +1351,21 @@ export default App
 
 
 
+
+/*
+Typing game
+const [wordCount, setWordCount, isStarted, setIsStarted, timeRemaining, setTimeRemaining, STARTING_TIME, textData, textRef, handleChange, startGame  ] = useTypingGame();
+
+<div id="container">
+            <h1>Typing speed game</h1>
+            <textarea ref={textRef} name="words" id="" cols="30" rows="10"  value={textData} onChange={handleChange} disabled={!isStarted}/>
+            <h4>Time remaining: {timeRemaining}</h4>
+            <button onClick={startGame} disabled={isStarted} >start game</button>
+            <h2>word count: {wordCount}</h2>
+            <br/>
+
+        </div>
+*/
 
 /* render prop function- to create a format that lets us keep our components style & elements, while easily keeping render logic to not rewrite.
 

@@ -4,6 +4,7 @@ import App from './App'
 import './index.css'
 import LogRocket from "logrocket";
 import {ContextProvider} from "./components/ContextProvider.jsx";
+import {BrowserRouter as Router} from "react-router-dom";
 
 
 /* LogRocket.init('jgr5zk/beginner-learning-react');
@@ -14,9 +15,9 @@ LogRocket.identify('jgr5zk', {
 
 ReactDOM.createRoot(document.getElementById('root')).render(
     <React.StrictMode>
-
+        <Router>
             <App/>
-
+        </Router>
     </React.StrictMode>
 )
 

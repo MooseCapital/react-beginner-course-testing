@@ -17,6 +17,8 @@ import settingsRoute from "./components/SettingsRoute.jsx";
 import infoRoute from "./components/InfoRoute.jsx";
 import ServicesList from "./components/ServicesList.jsx";
 import ServiceDetail from "./components/ServiceDetail.jsx";
+import ProductsRouter from "./components/ProductsRouter.jsx";
+import ProductsDetails from "./components/ProductsDetails.jsx";
 
 
 
@@ -1307,7 +1309,7 @@ Practice review -
                                                             <p>price: {item.price}</p>
                                                         </Fragment>
                                                     )
-                useParams()
+                useParams() - used to get data passed through link creation and held in a variable in the route :ID , we can match it's it'd id with database id
                     -> inside the component Service Detail above, we need to match the component with the route, router gives us useParams for this
                     -> now we rendered an element from data that gives each element a link, and dynamic routes lets each link have a route on command
                     -> useParams lets us see in the Route element above, <ServiceDetail/> inside, we now can access the :serviceId
@@ -1320,6 +1322,26 @@ Practice review -
                         -> we import param, now inside ServiceDetail component, match id made from ServiceList Link
                         -> now we have access to all things matching the id in the link and can use its data on the page, it's returned inside: thisService
 
+                        -> it's all about the initial <Link to={`/services/${item._id}`}> creation that makes the page link up top, matching the data's id,
+                                -> then accessing that id we set in route path, with  const param = useParams() -> and finally array.find() to match data id with route id
+                        * -> this is also for many of the same component, with just different data inside matching our id passed in link
+
+            useResolvedPath() - inside a path, we want to make more links relative on this path, what if the path name changes? we have to rewrite every link inside
+                            -> if we simply put these links as a variable, this makes it easy for us it's not hardcoded!
+                            -> bob showed us useRouteMatch() , this is v5 version
+                            -> now we use useResolvedPath() which gives an object with pathname inside, we can destructure or leave it
+                            const match = useResolvedPath()
+                                <Link to={`${match.pathname}/settings`}><button>settings service</button></Link>
+
+            useNavigate() - instead of links, if were in a component already, we want to go back to previous page from a button click. The user can click the back button
+                    -> in the browser, or our own button can navigate to any /pages we want! we will usually just link, but what about form submits.
+                    -> when the form submits, we want to navigate once the user is logged in and the database returns good, this is a major use case
+                    -> bob showed us the v5 version useHIstory() and history.push() and history.replace() .. in v6 we use useNavigate() and redirect()
+                    -> It's recommended to use redirect in loaders and actions rather than useNavigate in your components when the redirect is in response to data (fetch).
+                     const navigate = useNavigate()
+                        navigate("/services")  -> inside the button on click
+            useLocation() - used to get the current location link in browser and get query search after ?search in the browser bar
+                    -> unlike useNavigate() which actually moves us to a link, location just tells us where we currently are
 
   */
 
@@ -1335,9 +1357,8 @@ return (
         <div id="container">
             <Routes>
                 <Route path={"/"} element={<HomeRouterTest/>}/>
-                <Route path={"/services"} element={<ServicesList/>}/>
-                <Route path={"/services/:serviceId"} element={<ServiceDetail />}/>
-
+                <Route path={"/products"} element={<ProductsRouter/>}/>
+                <Route path={"/products/:productId"} element={<ProductsDetails/>}/>
             </Routes>
 
         </div>

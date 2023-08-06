@@ -8,7 +8,7 @@ import Grandparent from "./components/Grandparent.jsx";
 import useCounter from "./hooks/useCounter.jsx";
 import useTypingGame from "./hooks/useTypingGame.js";
 import {Link, Route, Routes, BrowserRouter as Router} from "react-router-dom";
-import HomeRouterTest from "./components/HomeRouterTest.jsx";
+import Home from "./components/Home.jsx";
 import RoutesHeader from "./components/RoutesHeader.jsx";
 import ProfileRoute from "./components/ProfileRoute.jsx";
 import SettingsRoute from "./components/SettingsRoute.jsx";
@@ -19,6 +19,7 @@ import ServicesList from "./components/ServicesList.jsx";
 import ServiceDetail from "./components/ServiceDetail.jsx";
 import ProductsRouter from "./components/ProductsRouter.jsx";
 import ProductsDetails from "./components/ProductsDetails.jsx";
+import Testing from "./components/Testing.jsx";
 
 
 
@@ -1058,7 +1059,7 @@ Practice review -
                                     -> even though they render in the same place, react sees 2 separate counts that do NOT share state.
                                                 countState ? <Count key={"dark"} class={"dark-mode"}/> : <Count key={"light"} class={"light-mode"}/>
 
-                                  * we must remember, even if it looks comlicated, react sees these braces as a "position" taken, even if the UI looks blank
+                                  * we must remember, even if it looks complicated, react sees these braces as a "position" taken, even if the UI looks blank
                                         {countState && <Count class={"dark-mode"} /> }
                                         <div/>
                                     -> our div will not move, even if countState is false and we render NOTHINg, moving it's UI position, react sees braces taking up position #1
@@ -1169,6 +1170,7 @@ Practice review -
 
                     -> we get a context.provider and useContext(), which tells where state is held and who it can be DIRECTLY passed to without going through others components
                       -> create a file for the Provider, instead of wrapping App in this, we pass it by using props.children, wrapping it in our custom component here..
+                            import { useState, createContext} from "react";
                                 const ThemeContext = React.createContext({});
 
                                     function ThemeContextProvider(props) {
@@ -1290,7 +1292,7 @@ Practice review -
                            <Link to={"/"}>Home</Link>
                             <Link to={"/about"}>about</Link>
                             <Routes>
-                                <Route path={"/"} exact element={<HomeRouterTest/>}/>
+                                <Route path={"/"} exact element={<Home/>}/>
                                 <Route path={"/about"} element={<h3>about page</h3>}></Route>
                             </Routes>
 
@@ -1341,7 +1343,31 @@ Practice review -
                      const navigate = useNavigate()
                         navigate("/services")  -> inside the button on click
             useLocation() - used to get the current location link in browser and get query search after ?search in the browser bar
+                    -> we will need this data to do something with it and confirm the right user is on a page etc..
                     -> unlike useNavigate() which actually moves us to a link, location just tells us where we currently are
+
+
+
+            lazy loading - there are some built in ways inside react for lazy loading, and there are packages, which we used https://www.npmjs.com/package/react-lazy-load-image-component
+                    -> this makes it very easy to not load an image until it's scrolled into view, I think we can do the same with components, when they're scrolled as well
+
+                more advanced cases are not simply lazy loading a component when scrolled, but not loading a component at all until the page is visited
+                    -> this is where react lazy and suspense come in, and is more advanced that our simple package https://il.ax/watch?v=1_dLaSjzOMY
+                    -> in tutorials we saw, the example was an admin password page, normal users don't access, which means.. we don't want this loaded every single page load
+                    -> since every person won't see it. by not loading it every time, we would save 300ms in the example. we can have big time savings when pages get big!
+
+                difference between React lazy and suspense
+                    *   our website might get very big, so when the user visits for the first time, we don't want it taking 5 seconds.. so we don't load every single thing
+                        at once, we will wait until they visit those pages to load, this is Lazy loading.
+
+                        const MarkdownPreview = lazy(() => delayForDemo(import('./MarkdownPreview.js')));
+                    -> lazy lets you defer loading components until it's requested & rendered for the first time, such as going to it's link with router
+                        ->we must use suspense on a lazy loaded component, while its loading, it's dependencies are not yet loaded, so suspense waits for that.
+                        -> the component could be shown instantly on lazy load, but it's imported libraries being used are not, suspense is for this!
+                    ->suspense lets you display a fallback until its children have finished loading/to the screen. it's to be used in combination, so until we lazy load,
+                        ->lets show a suspenseful.. loading spinner on the screen
+
+                    -> it makes sense how we combine these, lazy load our component until page is visited -> set up suspense so while that is loading, we show a spinner etc..
 
   */
 
@@ -1350,18 +1376,19 @@ function App(props) {
 
 return (
 
-    <div className={"col"}>
+    <div className={"light-mode App"}>
         <RoutesHeader/>
 
 
-        <div id="container">
-            <Routes>
-                <Route path={"/"} element={<HomeRouterTest/>}/>
-                <Route path={"/products"} element={<ProductsRouter/>}/>
-                <Route path={"/products/:productId"} element={<ProductsDetails/>}/>
-            </Routes>
 
-        </div>
+        <Routes>
+            <Route path={"/"} element={<Home/>}/>
+            <Route path={"/testing"} element={<Testing/>}/>
+            <Route path={"/products"} element={<ProductsRouter/>}/>
+            <Route path={"/products/:productId"} element={<ProductsDetails/>}/>
+        </Routes>
+
+
     </div>
 )
 }

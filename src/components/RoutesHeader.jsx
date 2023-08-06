@@ -3,14 +3,13 @@ import React from "react";
 
 function RoutesHeader(props) {
 
-    // const match = useMatch()
-    // console.log(match)
-    return (
-        <header className={"routes-header"}>
-            <Link to={"/"}><button>home</button></Link>
-            <Link to={"/products"}><button>products</button></Link>
 
-        </header>
+    return (
+        <div className={'nav-link'}>
+            <Link to={"/"}>home</Link>
+            <Link to={"/testing"}>testing</Link>
+
+        </div>
     )
 }
 

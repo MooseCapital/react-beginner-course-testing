@@ -1,28 +1,28 @@
-@font-face {
-    font-family: "Rubik";
-    src: url("/Rubik-VariableFont_wght.ttf") format("woff2");
-}
 :root {
  margin: 0 auto;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: Rubik, serif ;
-    color: #2e3440;
-    font-weight: 500;
-    font-size: 18px;
-    -webkit-text-size-adjust: 100%;
-    height: 100%;
+padding: 0;
+box-sizing: border-box;
+font-family: Rubik, serif ;
+font-weight: 500;
+font-size: 18px;
+-webkit-text-size-adjust: 100%;
+height: 100%;
+}
+@font-face {
+    font-family: "Rubik";
+    src: url("/public/fonts/Rubik.woff2") format("woff2");
 }
 /*remember we set height, but if we set width, it does not take into account the scrollbar 10px, this creates horizontal scroller on the bottom
     the solution is to not set width anywhere and it defaults, or set auto only, but we should set height. if we do set width, choose 100% over 100vw
         to avoid surprise scrollbars   https://www.freecodecamp.org/news/html-page-width-height/        https://css-tricks.com/the-lengths-of-css/
-                            https://www.nordtheme.com/
+  https://www.nordtheme.com/
 */
 
-
-html, body, #root, #container{
-  height: 100%;
-  margin: 0;
+/* if the page is NOT filled up, the color will only show up to the current elements height, if height is 100% it will up the page, but once you scroll
+    below the page load view, the background color of .App will not cover it, so we need min-height to cover the entire scrollable page. even though it looks bad at first */
+html, body, #root, .App{
+min-height: 100vh;
+margin: 0;
 padding: 0;
 }
 
@@ -31,117 +31,62 @@ padding: 0;
     padding: 0;
     box-sizing: border-box;
     font-family: Rubik, serif ;
-    /*color: rgb(236, 239, 244);*/
 }
 
+button {
+all: unset;
+padding: 0.375em 0.75em;
+width: max-content;
+border-radius: 3px;
+transition:  200ms ease-in-out;
+cursor: pointer;
+font-size: 1.2rem;
+font-weight: 400;
+}
+.light-mode button{
+border: 1px solid #2e3440;
+color: #2e3440;
+}
+.light-mode button:hover, .dark-mode button:hover  {
+border: 1px solid #88c0d0;
+color: #88c0d0;
+}
+.dark-mode button{
+border:0.0625em solid rgb(76, 86, 106);
+color: inherit;
+}
 
 body {
-    margin: 0 auto;
-    padding: 0;
-    /*background-color: #2e3440;*/
-    background-color: #d8dee9;
-
-color: #2e3440;
+/* background-color: #88c0d0; */
 }
-
-button{
-border: 1px solid #2e3440;
-background-color: #4c566a;
-padding: 0.3rem 1.5rem;
-width: max-content;
-font-weight: 600;
-font-size: 16px;
-color: #88c0d0;
-border-radius: 3px;
-transition: transform 100ms ease-in-out;
-/*margin-top: 1rem;*/
-cursor: pointer;
-margin: 5px;
-}
-button:hover  {
-cursor: pointer;
-}
-button:active {
-background-color: rgb(67,76,94, 0.8);
-}
-button:disabled {
-background-color: rgb(67,76,94, 0.4);
-cursor: not-allowed;
-}
-#root {
-
-}
-#container {
+.App {
 display: flex;
 flex-direction: column;
-padding: 10px;
-}
-.routes-header {
-background-color: antiquewhite;
-}
-ul  {
-list-style: circle;
-color: black;
-}
+padding: 1rem;
 
 
-.row{
-display: flex;
-flex-direction: row;
 }
-.col {
-display: flex;
-flex-direction: column;
-}
-.square {
-background-color: #b48ead;
-height: 100px;
-width: 100px;
+.App > * {
+margin: 0.5rem 0;
 }
 
-.test-container {
-background-color: antiquewhite;
-width: max-content;
-padding: 5px;
-border: 1px solid lightsalmon;
-margin: 5px;
-}
-
-
-.light-mode {
-background-color: white;
-color: #2e3440;
-border-radius: 3px;
-padding: 3px;
-display: flex;
-flex-direction: column;
-}
-.dark-mode {
-color: rgb(236, 239, 244);
+.App.dark-mode {
 background-color: #2e3440;
-border-radius: 3px;
-padding: 3px;
-display: flex;
-flex-direction: column;
+color: rgb(236, 239, 244);
 }
 
-
-textarea {
-width: 400px;
-background-color: #eceff4;
-padding: 5px;
-}
-textarea:disabled {
-background-color: rgb(236, 239, 244, 0.7);
-cursor: not-allowed;
-}
-textarea:focus {
-background-color: rgb(163, 190, 140,0.4);
+.App.light-mode {
+color: #2e3440;
+background-color: white;
 }
 
+.nav-link > a {
+    margin: 0 1rem;
+}
 
-
-
+input {
+max-width: 10rem;
+}
 
 
 

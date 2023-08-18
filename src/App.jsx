@@ -684,6 +684,15 @@ Forms ** - when using forms in react, we can make a separate state for items up 
                     -> to prevent this we "lazy load" which simply makes sure our code in useState() runs one time on first render and never again
                             const [notes, setNotes] = React.useState( JSON.parse(localStorage.getItem("notes")) || [])
                      --> to do this, we simply.. use a callback function once again.
+                     -> once local storage is called or set to the state at first load, we can make sure local storage is in sync with our state like controlled forms
+                        -> the neat trick of using effect means every time this state changes, it watches for updates and changes localstorage to match it.
+                                             useEffect(() => {
+                                                localStorage.setItem("formData", JSON.stringify(formData))
+
+                                                return () => {
+
+                                                }
+                                            },[formData])
 
                 Lazy state initialization - const [notes, setNotes] = useState(() => console.log() )
                     -> now our initial useState code runs once on first render and never again

@@ -1378,6 +1378,23 @@ Practice review -
 
                     -> it makes sense how we combine these, lazy load our component until page is visited -> set up suspense so while that is loading, we show a spinner etc..
 
+
+            useEffect review - if we put code in the global scope, like a time interval, it will run then run again on re-render, making infinite times!
+                    to prevent this, we use useEffect to ONLY run the code when the component is created
+                    -> the array dependency tells what instruction.
+
+                          useEffect(() => {
+                              // This runs after every render
+                            });
+
+                            useEffect(() => {
+                              // This runs only on mount (when the component appears)
+                            }, []);
+
+                            useEffect(() => {
+                              // This runs on mount *and also* if either a or b have changed since the last render
+                            }, [a, b]);
+
   */
 
 function App(props) {

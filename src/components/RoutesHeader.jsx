@@ -8,7 +8,8 @@ function RoutesHeader(props) {
         <div className={'nav-link'}>
             <Link to={"/"}>home</Link>
             <Link to={"/testing"}>testing</Link>
-
+            <Link to={"/products"}>products</Link>
+            <Link to={"/ErrorPage"}>Error Page</Link>
         </div>
     )
 }

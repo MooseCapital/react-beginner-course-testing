@@ -20,6 +20,7 @@ import ServiceDetail from "./components/ServiceDetail.jsx";
 import ProductsRouter from "./components/ProductsRouter.jsx";
 import ProductsDetails from "./components/ProductsDetails.jsx";
 import Testing from "./components/Testing.jsx";
+import {ErrorPageTest} from "./components/ErrorPageTest.jsx";
 
 
 
@@ -1395,7 +1396,95 @@ Practice review -
                               // This runs on mount *and also* if either a or b have changed since the last render
                             }, [a, b]);
 
+
+        Testing in react review - vitest            https://www.robinwieruch.de/vitest-react-testing-library/
+          1)      npm install vitest --save-dev
+                     in package.json add script
+                        "test": "vitest",
+          2)       create test file somewhere: App.test.jsx
+          3) add the code in the testing file
+                   import { describe, it, expect } from 'vitest';
+
+                    describe('something truthy and falsy', () => {
+                      it('true to be true', () => {
+                        expect(true).toBe(true);
+                      });
+
+                      it('false to be false', () => {
+                        expect(false).toBe(false);
+                      });
+                    });
+            4)  download jsdom
+                    npm install jsdom --save-dev
+            5) add to vite config file
+                      test: {
+                        environment: 'jsdom',
+                      },
+            6) install react testing library
+                    npm install @testing-library/react @testing-library/jest-dom --save-dev
+
+            7) create tests folder then make tests/setup.js  -> add this code
+                    import { expect, afterEach } from 'vitest';
+                    import { cleanup } from '@testing-library/react';
+                    import matchers from '@testing-library/jest-dom/matchers';
+
+                    // extends Vitest's expect method with methods from react-testing-library
+                    expect.extend(matchers);
+
+                    // runs a cleanup after each test case (e.g. clearing jsdom)
+                    afterEach(() => {
+                      cleanup();
+                    });
+
+            8) we can change the vite config to this, so we don't have to manually import anymore
+                    test: {
+                    globals: true,
+                    environment: 'jsdom',
+                    setupFiles: './tests/setup.js',
+                  },
+
+            9) install another package
+                    npm install @testing-library/user-event --save-dev
+
+
+        Proptypes and DefaultProps review -      https://legacy.reactjs.org/docs/typechecking-with-proptypes.html        https://blog.logrocket.com/validate-react-props-proptypes/
+            -> propTypes must be installed in new react with      npm install --save prop-types
+             -> we use these to confirm we are passing the correct type of prop, like string, number, object.. this gives us a warning, not an app stopping error
+             componentName.propTypes = { propName: PropTypes.string.isRequired }
+
+            default props - if we forget to pass in a prop, we use our default method, this way we get no error when reading props that might have been forgotten
+                componentName.defaultProps = {
+                      name: 'Zach',
+                    };
+
+        React router review -
+                    Client side routing - javascript handles routing in the browser. the url changes and the page is modified without refreshing, in general for SPA
+                        single page applications. link request are intercepted by js instead of going to the server, we never leave the main page, its content just changes
+                    Multi page applications - the client reloads every time we navigate to a page.
+
+                -> when the browser refreshes, it notifies the screen reader there is new content to read, with client side routing, we have to notify the screen
+                    reader of route updates manually. The routing libraries help us with this.
+
+                -> we can look up dynamic routes and param above. this is for a local item id matching id in databse, so we make the id the unique link to route to
+
+                protected routes - like by password. if we need an admin page, we can see if the user is admin, this is authentication.
+                    usually this is to see if user is signed up or signed in, so a home link might navigate them to signup page or not.
+                    https://reactrouter.com/en/main/components/navigate      https://stackoverflow.com/questions/62384395/protected-route-with-react-router-v6/64347082#64347082
+                    this can ensure no random user can go to the cart/checkout page or access content unless they are logged in!
+
+        Data fetching review -
+            -> when a component needs to make a request when it renders, its best to useEffect, this way we set array dependency to only run []
+                -> on the first render only
+            *Error Handling
+                we use try{} and catch{} to tell us if we get an error, so we put async fetch inside this. but
+                we also need to give the user an indication there is something wrong. if our fetch is correct then response.status gives us 200
+                if there is an error, it is 404
+                    let res = await fetch("https://picsum.photos/v7/list?page=4&limit=10", { mode: "cors" });
+                            console.log(res.status)
+
+
   */
+
 
 function App(props) {
 
@@ -1406,12 +1495,13 @@ return (
         <RoutesHeader/>
 
 
-
         <Routes>
-            <Route path={"/"} element={<Home/>}/>
+            <Route path={"/"} element={<Home />}/>
             <Route path={"/testing"} element={<Testing/>}/>
             <Route path={"/products"} element={<ProductsRouter/>}/>
             <Route path={"/products/:productId"} element={<ProductsDetails/>}/>
+            <Route path={"/ErrorPage"} element={<ErrorPageTest/>}/>
+            <Route path={"*"} element={<ErrorPageTest/>}/>
         </Routes>
 
 

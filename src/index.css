@@ -80,8 +80,12 @@ color: #2e3440;
 background-color: white;
 }
 
-.nav-link > a {
+ a {
+    all:unset;
+    color: rgb(28, 99, 231);
     margin: 0 1rem;
+    cursor: pointer;
+    text-decoration: underline;
 }
 
 input {

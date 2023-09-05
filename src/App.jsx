@@ -1472,7 +1472,7 @@ Practice review -
                     https://reactrouter.com/en/main/components/navigate      https://stackoverflow.com/questions/62384395/protected-route-with-react-router-v6/64347082#64347082
                     this can ensure no random user can go to the cart/checkout page or access content unless they are logged in!
 
-        Data fetching review -
+        Data fetching review -  https://www.developerway.com/posts/how-to-fetch-data-in-react
             -> when a component needs to make a request when it renders, its best to useEffect, this way we set array dependency to only run []
                 -> on the first render only
             *Error Handling
@@ -1481,6 +1481,74 @@ Practice review -
                 if there is an error, it is 404
                     let res = await fetch("https://picsum.photos/v7/list?page=4&limit=10", { mode: "cors" });
                             console.log(res.status)
+
+                *note, the error will already be shown in the console, we use try..catch.. to throw our own custom error message!
+                    ->now inside catch{} we can set an error state to our thrown new Error("") message, since we already have it in console, this is
+                    -> for setting a state so we can pass that along to the user on the page!
+                    try {
+                        if (response.status >= 400) {
+                           throw new Error(`server error http, the status is: ${response.status}`)
+                        }
+                    } catch (error) {
+                        setErrorHandler(error.message)
+                    } finally {
+                            setLoading(prevState => false)
+
+                    }
+
+                Axios - after researching, fetch will do us good most of the time, we can search other libraries for more features, fetch does not support older browsers like
+                        internet explorer(if we ever need to support that, we'd have to polyfill, or use axios for this
+                        -> axios can easily intercept and cancel subsequent API calls, *This is most important, when authenticating calls, we might cancel on error*
+                            -> so cancelling an api call in progress seems useful, and axios is useful if we have data from different api endpoints.
+                fetch replacements - we should always know fetch fundamentals and understand why we might need an external library, such as..
+                    -> error handling, multiple components fetching the same endpoint, how to cache the resonses, how long to cache, race conditions for fetching
+                    ->what if the component removes from the screen, how to cancel request in progress, memory leaks..
+
+                        Axios, swr https://swr.vercel.app/docs/getting-started ,
+                    -> we should be mindful of starting fetch request and times, such as does our 2nd and 3rd api call start after the 1st finishes or
+                            do they all start at the same time, to Drastically reduce times?
+                    -> to do this, we should fetch our data in one place, but not at the top level to prevent prop drilling, we can fetch data in our context provider!
+                    -> * remember the browser can only fetch 6 request in paralell, then the 7th has to be queued and wait for 1 to finish to begin.
+                    a fetching library replaces the loading state we created, and <suspense> does it automatically to
+
+
+        Performance review - we should Never think about performance first, build the app, then worry about preventing unnecessary re-renders
+            useMemo() - memoizes values, uses array dependency to run, instead of running each render, will run before the re-render unlike useEffect, which runs after render
+            useCallBack() - memoizes functions,
+
+            when optimizing performance, many make the mistake of trying to make props not change and unnecessarily memoize them.
+             -> because when state OR props change, the component re-renders AND all of it's children will as well.
+             -> we should use this guide to know when to memoize and useCallback() https://www.developerway.com/posts/how-to-use-memo-use-callback
+            -> we can cause a whole chain reaction of child components to re-render when it didn't need to happen at all
+            -> React.memo() solves this. or now just memo() -> it basically says, if the components prop has not changed, then don't trigger re-render https://react.dev/reference/react/memo
+            -> this is where we need usecallback() if we have not memoized an event listener function, then it will trigger a re-render, even though the function is the same
+                const Page = () => <Item />;
+                const PageMemoized = React.memo(Page);
+
+                  const onClick = useCallback(() => {
+                    console.log('Do something on click');
+                  }, []);
+                <PageMemoized onClick={onClick} value={[1, 2, 3]} />
+                  -> now on re-render, PageMemoized will also render, unless we memoize value as well, ALL props must be memoized
+
+            -> what are "resource intensive calculations"? react says we should memoize them, unless we are looping over 1000+ items in js, it's not worth it
+            -> the real bottleneck is actually re-rendering children, so any component that loops over data to render, is intensive, and slow
+            -> such as below, if we don't memo, then this could take 20ms on each render, now it takes 2ms if no values changed.
+            const List = ({ countries }) => {
+              const content = useMemo(() => {
+                const sortedCountries = orderBy(countries, 'name', sort);
+
+                return sortedCountries.map((country) => <Item country={country} key={country.id} />);
+              }, [countries, sort]);
+              return content;
+            };
+            ->remember using memo() is only useful if we plan on using the exact same props, otherwise if they change, we want the component different as well!
+
+
+            <suspense> -> is not performance, BUT deals with showing a loading placeholder for elements, such as waiting for the server response api.
+                -> in modern sites, we don't want an ugly spinning loader, so while waiting, we should use a modern loader like react skeleton
+                        https://www.npmjs.com/package/react-loading-skeleton
+
 
 
   */
@@ -1491,12 +1559,11 @@ function App(props) {
 
 return (
 
-    <div className={"light-mode App"}>
+    <div className={"dark-mode App"}>
         <RoutesHeader/>
 
-
         <Routes>
-            <Route path={"/"} element={<Home />}/>
+            <Route path={"/"} element={<Home/>}/>
             <Route path={"/testing"} element={<Testing/>}/>
             <Route path={"/products"} element={<ProductsRouter/>}/>
             <Route path={"/products/:productId"} element={<ProductsDetails/>}/>

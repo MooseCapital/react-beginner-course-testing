@@ -21,6 +21,7 @@ import ProductsRouter from "./components/ProductsRouter.jsx";
 import ProductsDetails from "./components/ProductsDetails.jsx";
 import Testing from "./components/Testing.jsx";
 import {ErrorPageTest} from "./components/ErrorPageTest.jsx";
+import {useSelector} from "react-redux";
 
 
 
@@ -1624,10 +1625,11 @@ Practice review -
 
 function App(props) {
 
+    const testState = useSelector((store) => store.test);
 
 return (
 
-    <div className={"dark-mode App"}>
+    <div className={`${testState.colorMode} App`}>
         <RoutesHeader/>
 
         <Routes>

@@ -1,9 +1,15 @@
 import {useContext, useEffect, useState, useRef, startTransition} from 'react'
 import PropTypes from "prop-types";
 import {AllContext} from "./ContextProvider.jsx";
+import {useDispatch, useSelector} from "react-redux";
+import {toggleColor} from "../features/test/testSlice.js";
 
 function Home(props) {
-    let context = useContext(AllContext);
+
+
+    const dispatch = useDispatch()
+    const testState = useSelector((store) => store.test);
+
     const [formTest, setFormTest] = useState({firstName: "", lastName: ""})
 
     function handleForm(event) {
@@ -19,7 +25,7 @@ function Home(props) {
         <>
             <h3>home page</h3>
 
-            <button onClick={() => 1}>test</button>
+            <button onClick={() => dispatch(toggleColor())}>test</button>
             <div>{`${formTest.firstName} ${formTest.lastName}`}</div>
             <input type="text" placeholder={"first name"} name={"firstName"} value={formTest.firstName} onChange={handleForm}/>
             <input type="text" placeholder={"last name"} name={"lastName"} value={formTest.lastName} onChange={handleForm}/>

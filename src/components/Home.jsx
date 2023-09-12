@@ -1,8 +1,9 @@
 import {useContext, useEffect, useState, useRef, startTransition} from 'react'
 import PropTypes from "prop-types";
+import {AllContext} from "./ContextProvider.jsx";
 
 function Home(props) {
-
+    let context = useContext(AllContext);
     const [formTest, setFormTest] = useState({firstName: "", lastName: ""})
 
     function handleForm(event) {

@@ -1550,9 +1550,77 @@ Practice review -
                         https://www.npmjs.com/package/react-loading-skeleton
 
 
+        Style review - the different ways we can use css
+            -> classic .css files
+            -> css utility frameworks, predefined classes like https://tailwindcss.com/ lets you write a class in your element and it's auto styled
+            -> css in js,  write directly in the jsx, like removing the .css file https://css-tricks.com/a-thorough-analysis-of-css-in-js/ https://emotion.sh/docs/introduction  https://styled-components.com/
+            -> component libraries, many things are already made for us, like the popular https://mui.com/  https://www.radix-ui.com/  https://chakra-ui.com/
+
+        Context review - context prevent prop drilling when needing to pass props through many components
+            drawbacks - ALL components using our context will re-render when only one state changes.. this makes prop drilling simpler, BUT
+                -> we can easily see the massive performance issues with this & unnecessary re-rendering.
+                -> nested components can be hard to follow as state isn't passed as props from the parent, but from one location that makes it complicated to read.
+            solutions - smaller context to prevent re-renders for entire apps components, but this makes it complicated keeping up with more context, at this point
+                -> it might be better performance to keep up with props, if the layers aren't too deep
+                -> possibly redux the state management tool can prevent this re-rendering while still holding state in one place, we haven't tried it yet.
+                -> zustand is another state management tool like redux https://github.com/pmndrs/zustand
+
+        Reducer review - for components that have many state updates, we can combine them into one reducer, such as notes having a different function to add, update, delete state..
+            instead of being different functions to add, update.. we can combine these different functions in the same reducer location.. we REDUCE the needed code and area.
+            -> we will usually use a switch statement that's easy to read than if..else, it's basically an if statement where the condition is always checking if our values equal
+
+        redux - setup and how to use **note we are only doing synchronous for now, to replace useContext so components will not update, but when fetching async api data
+            -> we need to get more advanced to set up, for now when fetching and storing state, we will simply use a fetch in useeffect, BUT this isn't good long term
+            -> as we should have this async data away from the component so it's lighter.
+                * all redux setup code can be found in vite-project-setup project
+
+        step 1) npm install @reduxjs/toolkit react-redux
+        2) go inside main.jsx -> we have removed context, now using redux only
+                import {store} from './store.js';
+                import {Provider } from 'react-redux';
+              -> wrap the App component
+                <Provider store={store}>
+                        <App/>
+                 </Provider>
+
+        3) inside src folder, create store.js ->
+              -> we import all state slices and add them in here, as sliceReducer
+                import { configureStore } from '@reduxjs/toolkit';
+                import testReducer from './features/test/testSlice.js'
+                export const store = configureStore({
+                  reducer: {
+                    test: testReducer,
+                  },
+                });
+
+        4) inside src folder, create features folder, then features/sliceName folder
+            -> inside our slice folder we make the sliceName.js file to hold slice code
+            -> we should have src/features/test/testSlice.js
+
+            know the slice name, now use our live template: reduxcreateslice
+            -> this completes the entire file for us
+            ->*remember! every time we make a reducer to set the state, we must add it to exports to use
+                export const {testMakeFalse, reducersHere} = testSlice.actions;
+
+        5) inside the actual code, we want to access state and set the state,
+            import {useDispatch, useSelector} from "react-redux";
+            import {testMakeFalse, testMakeTrue, toggleColor} from "../features/test/testSlice.js";
+
+            -> we have imported each reducer from each individual slice folder and file above
+            -> now to access and set it
+            const dispatch = useDispatch()
+            const testState = useSelector((store) => store.test);
+
+            -> inside a button we put this in the dispatch, in the callback
+                onClick={() => dispatch(toggleColor())}
+            -> to access that same state, we changed above with reducer
+                <p>{testState.colorMode}}</p>
+            -> we can also destructure useSelector to get colorMode directly, but i like specifying
+                -> its a state object I'm accessing
+
+
 
   */
-
 
 function App(props) {
 

@@ -6,15 +6,16 @@ import {AllContext} from "./ContextProvider.jsx";
 
 
 function Testing(props) {
-   let context = useContext(AllContext);
-    if (context.errorHandler) {
-        return <div> error... {context.errorHandler}</div>
-    } else if(context.loading) {
+    let [fetchData, errorHandler, loading] = UseFetch("https://picsum.photos/v2/list?page=4&limit=10");
+
+    if (errorHandler) {
+        return <div> error... {errorHandler}</div>
+    } else if(loading) {
         return <div>loading...</div>
     }
     return (
         <div>
-            <img src={context?.fetchData[2]?.download_url} className={"test-image"} alt=""/>
+            <img src={fetchData[2]?.download_url} className={"test-image"} alt=""/>
         </div>
     )
 }

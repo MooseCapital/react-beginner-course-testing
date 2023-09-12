@@ -9,7 +9,7 @@ function UseFetch(fetchLink) {
             let subscribed = true;
             async function getData() {
                 try {
-                    const start = new Date();
+                    // const start = new Date();
                     let response = await fetch(fetchLink, {method: "GET", mode: "cors" });
                     if (!response.ok) {
                        throw new Error(`http server error, the status is: ${response.status}`)
@@ -18,8 +18,7 @@ function UseFetch(fetchLink) {
                     if (subscribed) {
                         setErrorHandler(false)
                         setFetchData(data)
-                         console.log(new Date() - start)
-                        // console.log(data)
+                         // console.log(new Date() - start)
                     }
                 }   catch (error) {
                         setErrorHandler(error.message)

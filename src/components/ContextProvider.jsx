@@ -5,11 +5,11 @@ const AllContext = React.createContext({})
 
  function ContextProvider(props) {
     const [userName, setUserName] = useState("squidward")
-      let [fetchData, errorHandler, loading] = UseFetch("https://picsum.photos/v2/list?page=4&limit=10");
+
 
 
     return (
-       <AllContext.Provider value={{userName, setUserName, fetchData, errorHandler, loading }}>
+       <AllContext.Provider value={{userName, setUserName }}>
            {props.children}
        </AllContext.Provider>
     )

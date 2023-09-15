@@ -21,6 +21,10 @@ function Home(props) {
         })
     }
 
+    const test = () => (
+        console.log("hi")
+    );
+
     return (
         <>
             <h3>home page</h3>
@@ -29,6 +33,7 @@ function Home(props) {
             <div>{`${formTest.firstName} ${formTest.lastName}`}</div>
             <input type="text" placeholder={"first name"} name={"firstName"} value={formTest.firstName} onChange={handleForm}/>
             <input type="text" placeholder={"last name"} name={"lastName"} value={formTest.lastName} onChange={handleForm}/>
+            <button onClick={() => test()} >test return</button>
         </>
     )
 }

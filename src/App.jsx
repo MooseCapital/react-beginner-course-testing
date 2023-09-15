@@ -1,4 +1,4 @@
-import React, {useState, useEffect, Fragment, useRef} from 'react'
+import React, {useState, useEffect, Fragment, useRef, useMemo} from 'react'
 import './App.css'
 import Overview from "./components/Overview.jsx";
 import TestComp from "./components/TestComp.jsx";
@@ -1513,7 +1513,7 @@ Practice review -
                     a fetching library replaces the loading state we created, and <suspense> does it automatically to
 
 
-        Performance review - we should Never think about performance first, build the app, then worry about preventing unnecessary re-renders
+        Performance review -*check usememo review below as well, we should Never think about performance first, build the app, then worry about preventing unnecessary re-renders
             useMemo() - memoizes values, uses array dependency to run, instead of running each render, will run before the re-render unlike useEffect, which runs after render
             useCallBack() - memoizes functions,
 
@@ -1570,58 +1570,185 @@ Practice review -
             instead of being different functions to add, update.. we can combine these different functions in the same reducer location.. we REDUCE the needed code and area.
             -> we will usually use a switch statement that's easy to read than if..else, it's basically an if statement where the condition is always checking if our values equal
 
+
+
         redux - setup and how to use **note we are only doing synchronous for now, to replace useContext so components will not update, but when fetching async api data
             -> we need to get more advanced to set up, for now when fetching and storing state, we will simply use a fetch in useeffect, BUT this isn't good long term
             -> as we should have this async data away from the component so it's lighter.
                 * all redux setup code can be found in vite-project-setup project
 
-        step 1) npm install @reduxjs/toolkit react-redux
-        2) go inside main.jsx -> we have removed context, now using redux only
-                import {store} from './store.js';
-                import {Provider } from 'react-redux';
-              -> wrap the App component
-                <Provider store={store}>
-                        <App/>
-                 </Provider>
+            step 1) npm install @reduxjs/toolkit react-redux
+            2) go inside main.jsx -> we have removed context, now using redux only
+                    import {store} from './store.js';
+                    import {Provider } from 'react-redux';
+                  -> wrap the App component
+                    <Provider store={store}>
+                            <App/>
+                     </Provider>
 
-        3) inside src folder, create store.js ->
-              -> we import all state slices and add them in here, as sliceReducer
-                import { configureStore } from '@reduxjs/toolkit';
-                import testReducer from './features/test/testSlice.js'
-                export const store = configureStore({
-                  reducer: {
-                    test: testReducer,
-                  },
-                });
+            3) inside src folder, create store.js ->
+                  -> we import all state slices and add them in here, as sliceReducer
+                    import { configureStore } from '@reduxjs/toolkit';
+                    import testReducer from './features/test/testSlice.js'
+                    export const store = configureStore({
+                      reducer: {
+                        test: testReducer,
+                      },
+                    });
 
-        4) inside src folder, create features folder, then features/sliceName folder
-            -> inside our slice folder we make the sliceName.js file to hold slice code
-            -> we should have src/features/test/testSlice.js
+            4) inside src folder, create features folder, then features/sliceName folder
+                -> inside our slice folder we make the sliceName.js file to hold slice code
+                -> we should have src/features/test/testSlice.js
 
-            know the slice name, now use our live template: reduxcreateslice
-            -> this completes the entire file for us
-            ->*remember! every time we make a reducer to set the state, we must add it to exports to use
-                export const {testMakeFalse, reducersHere} = testSlice.actions;
+                know the slice name, now use our live template: reduxcreateslice
+                -> this completes the entire file for us
+                ->*remember! every time we make a reducer to set the state, we must add it to exports to use
+                    export const {testMakeFalse, reducersHere} = testSlice.actions;
 
-        5) inside the actual code, we want to access state and set the state,
-            import {useDispatch, useSelector} from "react-redux";
-            import {testMakeFalse, testMakeTrue, toggleColor} from "../features/test/testSlice.js";
+            5) inside the actual code, we want to access state and set the state,
+                import {useDispatch, useSelector} from "react-redux";
+                import {testMakeFalse, testMakeTrue, toggleColor} from "../features/test/testSlice.js";
 
-            -> we have imported each reducer from each individual slice folder and file above
-            -> now to access and set it
-            const dispatch = useDispatch()
-            const testState = useSelector((store) => store.test);
+                -> we have imported each reducer from each individual slice folder and file above
+                -> now to access and set it
+                const dispatch = useDispatch()
+                const testState = useSelector((store) => store.test);
 
-            -> inside a button we put this in the dispatch, in the callback
-                onClick={() => dispatch(toggleColor())}
-            -> to access that same state, we changed above with reducer
-                <p>{testState.colorMode}}</p>
-            -> we can also destructure useSelector to get colorMode directly, but i like specifying
-                -> its a state object I'm accessing
+                -> inside a button we put this in the dispatch, in the callback
+                    onClick={() => dispatch(toggleColor())}
+                -> to access that same state, we changed above with reducer
+                    <p>{testState.colorMode}}</p>
+                -> we can also destructure useSelector to get colorMode directly, but i like specifying
+                    -> its a state object I'm accessing
+
+
+        useRef review - we can hold values between each render without causing re-renders and create reference to an element to add events and stuff.
+                -> with normal state -> cause re-render -> local variables destroy & reset
+
+                Dom manipulation - sometimes we need direct control over elements, and useRef lets us access that, such as when we want to .focus() and input field
+                    1) create the useRef
+                        const buttonRef = useRef(null); -> we set to null as the initial value that will be changed
+                    2) we pair with any elements by the ref attribute
+                        <button ref={buttonRef}>Click Me!</button>
+                    3) so we don't focus on every render, we useEffect to only focus when component first mounts
+                        useEffect(() => {
+                            buttonRef.current.focus();
+                          }, []);
+                      -> buttonRef.current is null, then it is connected to the button element, react renders and paints the screen before running useEffect, so its connected
+
+            we can do almost any dom manipulation from vanilla javascript, however we should only use useRef for NON destructive dom operations
+                it's best to edit the text in jsx directly      buttonRef.current.textContent = "Click Me!";
+
+                if we use element.queryselector() -> it would defeat the purpose of react, so we let react commit to the DOM itself.
+                    ->this can also be more inefficient and lead to unexpected behaviors.
+
+                useRef - mutable reference, updating values do not trigger re-render, can control DOM elements & actions on them.
+                useState - immuteable reference, changing its value triggers re-renders
+
+
+        useMemo review - remember premature optimization is the root of all evil, keep our app simple and BUILD it first, such as normal state and props, then worry
+            about adding in redux later, and adding in React.memo and useMemo for performance gains.
+            as useRef does not trigger re-renders while setting a value to keep. useMemo chooses dependency array, to not run again/calculate ON future re-renders after initial.
+
+            in my example on Testing component, i use a for loop out in the open, and click a button to change a state, that triggers re-rendering.
+            then I comment the for loop out, and useMemo to return a value that loops over on the first render only
+                            const [unchanging, setUnchanging] = useState(null)
+                            const [reTest, setReTest] = useState(0)
+                            const Num = useMemo(() => {
+                                let tempNum = 0;
+                                for (let i = 0; i < 100000000; i++) {
+                                    tempNum = i;
+                                }
+                                return tempNum;
+                            }, [unchanging]);
+                        <button onClick={() => setReTest(prevState => prevState + 1)}>test button: {reTest}</button>
+                -> the button is not setting "unchaing" state used for useMemo. so useMemo does NOT run again after the first when clicking button.
+                -> we go into inspect -> profiler, since we have react dev tools extension. Now reload and start profiling.
+                -> when NOT using memo it takes 230ms on initial Testing render, then 100ms+ each time we click the button
+                -> when using Memo, it takes 230ms on initial Testing render, then only 1ms for each click of the button.
+                -> we can EASILY see the huge difference, memo is for large calculations that slow our page
+
+
+        Memo review- I have better notes from previous course, but memo or React.memo() basically prevents the entire component from re-renders if its props
+                have not changed, where as useMemo() stops a function from calling and stores a calculation or return value. https://www.developerway.com/posts/how-to-use-memo-use-callback
+
+                Ex -  a nested component won't re-render every time it's parent does, only when its props change or it's state inside, which makes sense.
+                    -> so we just wrap the component in memo() and read the guide for more advanced issues,such as shallow comparison
+                      https://react.dev/reference/react/memo    React compares old and new props by shallow equality: that is,
+                      it considers whether each new prop is reference-equal to the old prop
+
+                    const ButtonComponent = memo(({ children, onClick }) => {
+                          return (
+                            <button type="button" onClick={onClick}>
+                            </button>
+                          );
+
+              -> we must also memoize the function onClick that is passed in, it changes due to shallow equality in the link above. same as objects/arrays
+               --> ** if you create a new function when rendering the parent component, React will consider it to have changed even if the function has the same definition.
+                To avoid this, we memoize the actual function definition with useMemo or useCallBack() , in addition to making the component wrapped in memo()
+
+                 const memoizedHandleClick = useMemo(() => handleClick, []);
+                <button type="button" onClick={memoizedHandleClick}>
+
+                -> this way, we kept all our same code, but wrapped our component in memo() and now memoized the function to make it not re-render every time
+                    -> unless real props have changed that we want, we have no array dependency above because a function is always the same code.
+
+            ** After seeing these incredibly easy to implement performance gains, we should always create our app with normal props and no memoizing at first
+                -> it will be easy to put state in redux later if it is connected to other components, but things like forms do not need redux because no connection
+                -> but we will most likely put fetching in redux so we can grab data for all components before it loads, instead of waiting until it renders.
+                -> memoizing is almost useless without wrapping a component in React.memo()
+                -> the biggest performance gain will be preventing element rendering such as mapping over data array to render component list. memoize them
+                    -> to prevent heavy component re-renders, unless the data, (dependency array) changes.
+                ->we can potentially use context and simply memoize every value passed in, so every dependent consumers does not update on one state change,
+                    -> but we should be using redux anyway.
+
+            useCallback - same as useMemo() except, it is ONLY for memoizing functions, since the function won't change like a calculated useMemo, we
+                    -> will never be using an array dependency most likely.
+                    -> when wrapping a component in memo, remember above, it uses shallow equality and sees functions as changed each time which means re-render
+                    -> so we put the already written function in useMemo, but now we can specifically use useCallBack, or simplify with useMemo for everything
+                    const memoizedHandleClick = useMemo(() => handleClick, []);
+                    const memoizedHandleClick = useCallback(handleClick, []);
+
+
+
+            setInterval() review - in this article we see pitfalls of setInterval and we should use useInterval a custom flexible hook https://overreacted.io/making-setinterval-declarative-with-react-hooks/
+                    -> with strict mode being on in development, our intervals run twice, so we have 2 intervals counting. this is good because it catches us not "cleaning" up
+                    -> like in useEffect, to fix we should clear the interval in the useEffect cleanup return function. Now with the 2nd run it removes that
+                    -> interval and starts the 2nd interval that runs smoothly.
+                            useEffect(() => {
+                                let time = setInterval(() => {
+                                    setTimer(prevState => prevState + 1)
+                                }, 1000)
+                                return () => {
+                                    clearInterval(time)
+                                }
+                            },[])
+                             <div>counts:{timer}</div>
+                    -> to make our own customizeable delay by input, like in the link we change delay from hardset number to a state
+                    -> potential use cases are, if we fetch constantly to the server or need constant updates, but then notice the user goes to another tab
+                    -> we could then slow down our calls, no need to waste server time while the user is away!
+                                const [timer, setTimer] = useState(0)
+                                const [delay, setDelay] = useState(1000)
+                                useEffect(() => {
+                                    let time = setInterval(() => {
+                                        setTimer(prevState => prevState + 1)
+                                    }, delay)
+                                    return () => clearInterval(time)
+                                },[delay])
+
+                    -> other unique ideas can be passing in a value that determines if we want the interval to start or not, this is so it doesn't auto start
+                    -> on page render, and we can start it ourselves. it doesn't involve chaing delay, its simply, DONT start the interval if were not ready, inside if()
+                                if (delay !== null) {
+                                  let id = setInterval(tick, delay);
+                                  return () => clearInterval(id);
+                                }
+
+            *** This is the end of The Odin projects react course, I'm now moving to nodejs***
 
 
 
   */
+
 
 function App(props) {
 

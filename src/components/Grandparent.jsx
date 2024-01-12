@@ -1,6 +1,5 @@
 import React, {Fragment, memo, useContext} from "react";
 import Parent from "./Parent.jsx";
-import {AllContext} from "./ContextProvider.jsx";
 
 function Grandparent(props) {
 

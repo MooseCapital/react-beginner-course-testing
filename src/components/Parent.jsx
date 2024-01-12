@@ -1,6 +1,5 @@
 import Child from "./Child.jsx";
 import React, {useContext, useState} from "react";
-import {AllContext} from "./ContextProvider.jsx";
 
 function Parent(props) {
 

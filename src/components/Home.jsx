@@ -1,14 +1,9 @@
 import {useContext, useEffect, useState, useRef, startTransition} from 'react'
 import PropTypes from "prop-types";
-import {AllContext} from "./ContextProvider.jsx";
-import {useDispatch, useSelector} from "react-redux";
-import {toggleColor} from "../features/test/testSlice.js";
+import {localStore, sessionStore} from "../store.js";
 
 function Home(props) {
 
-
-    const dispatch = useDispatch()
-    const testState = useSelector((store) => store.test);
 
     const [formTest, setFormTest] = useState({firstName: "", lastName: ""})
 
@@ -21,19 +16,23 @@ function Home(props) {
         })
     }
 
-    const test = () => (
-        console.log("hi")
-    );
+    const {colorMode, toggleColorMode} = localStore((state) =>({
+            colorMode: state.colorMode,
+            toggleColorMode: state.toggleColorMode
+    }));
+
+    const {counter, incrementCounter} = sessionStore((state) =>({
+            counter: state.counter,
+            incrementCounter: state.incrementCounter
+    }));
 
     return (
         <>
             <h3>home page</h3>
 
-            <button onClick={() => dispatch(toggleColor())}>test</button>
+            <button onClick={toggleColorMode}>toggle color mode</button>
             <div>{`${formTest.firstName} ${formTest.lastName}`}</div>
-            <input type="text" placeholder={"first name"} name={"firstName"} value={formTest.firstName} onChange={handleForm}/>
-            <input type="text" placeholder={"last name"} name={"lastName"} value={formTest.lastName} onChange={handleForm}/>
-            <button onClick={() => test()} >test return</button>
+            <button onClick={incrementCounter} >{`increase counter: ${counter}`}</button>
         </>
     )
 }

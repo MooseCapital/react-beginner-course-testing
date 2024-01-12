@@ -1,6 +1,9 @@
 import {Fragment, useEffect, useState} from "react";
 
 function DataFetcher(props) {
+    import {Fragment, useEffect, useState} from "react";
+
+function DataFetcher(props) {
     const [data, setData] = useState(null);
     const [isLoaded, setIsLoaded] = useState(false);
 
@@ -24,6 +27,19 @@ function DataFetcher(props) {
             let subscribed = false
         }
     }, [])
+
+    return (
+        <>
+            {props.render(data, isLoaded)}
+        </>
+    )
+}
+
+export default DataFetcher
+
+
+
+
 
     return (
         <>

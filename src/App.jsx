@@ -1,4 +1,4 @@
-import React, {useState, useEffect, Fragment, useRef, useMemo} from 'react'
+import React, {useState, useEffect, Fragment, useRef, useMemo, lazy, Suspense} from 'react'
 import './App.css'
 import Overview from "./components/Overview.jsx";
 import TestComp from "./components/TestComp.jsx";
@@ -9,6 +9,7 @@ import useCounter from "./hooks/useCounter.jsx";
 import useTypingGame from "./hooks/useTypingGame.js";
 import {Link, Route, Routes, BrowserRouter as Router} from "react-router-dom";
 import Home from "./components/Home.jsx";
+import '@fontsource/inter/500.css';
 import RoutesHeader from "./components/RoutesHeader.jsx";
 import ProfileRoute from "./components/ProfileRoute.jsx";
 import SettingsRoute from "./components/SettingsRoute.jsx";
@@ -19,10 +20,6 @@ import ServicesList from "./components/ServicesList.jsx";
 import ServiceDetail from "./components/ServiceDetail.jsx";
 import ProductsRouter from "./components/ProductsRouter.jsx";
 import ProductsDetails from "./components/ProductsDetails.jsx";
-import Testing from "./components/Testing.jsx";
-import {ErrorPageTest} from "./components/ErrorPageTest.jsx";
-import {useSelector} from "react-redux";
-
 
 
 
@@ -1745,32 +1742,101 @@ Practice review -
 
             *** This is the end of The Odin projects react course, I'm now moving to nodejs***
 
+            React error boundary - we use this so errors dont crash the entire website, instead if we put them around each route
+                -> we can have a custom error page, or a fallback component that shows a message to the user, and we can log the error
+                -> we also have a wrapper for the whole page that shows a neat error page telling the user to refresh or close and try again
 
+                npm install react-error-boundary
+                we wrap the entire app and have a custom page for it,
+                        <ErrorBoundary fallback={<CustomPageFallback/>}>
+                        <App/>
+                        </ErrorBoundary>
+
+
+                now we wrap each route in the error boundary, so if one route has an error, it doesn't crash the whole app
+
+                    import {ErrorBoundary} from "react-error-boundary";
+                    const LazyChart = lazy(() => import('./components/Chart.jsx'))
+
+                    <Route path="/chart" element={
+                            <ErrorBoundary fallback={<p>⚠️Something went wrong</p>}>
+                                <Suspense fallback={<div></div>}>
+                                    <LazyChart/>
+                                </Suspense>
+                            </ErrorBoundary>
+                        }/>
+
+                * now we add suspense in, since we will 100% be using lazy load so the user doesnt waste bandwidth
+                -> when they might not even visit some of our pages, we don't want to spend our resources and hurt loading times
+                -> remember when our component was failing we lazy loaded, but did not use suspense. REMEMBER THIS!
+
+                Now inside the Chart component we must lazy load its dependencies, such as the chart library
+                    -> if we don't, then even thought we lazy load Charts component, the library is loaded by simply going
+                    -> to our home page, which makes it useless, lazy load all its packages!!
+
+                const LazyReactECharts = React.lazy(() => import('echarts-for-react'));
+
+                -> ** we must not forget our suspense on a lazy loaded component again!
+                    <Suspense fallback={<div>loading...</div>}>
+                        <LazyReactECharts option={chartOptions} style={{ height: '600px', width: '100%' }} />
+                     </Suspense>
+
+
+             Lazy load - since we are lazy loading, we now know to always use suspense, even if we don't really want a fallback we can leave it blank
+                 but vite needs to know to give us time to wait for the lazy loaded code, so we must add this to vite.config.js
+                 optimizeDeps: {
+                    include: ['echarts-for-react'], // Add your dependencies here
+                  },
+                  // Set the suspense timeout
+                  suspense: { timeout: 10000 },
+                  experiments: {
+                    optimizeDeps: {
+                      entries: ['echarts-for-react'], // Add your dependencies here
+                      experimentalCodeSplitting: true,
+                    },
+                  },
 
   */
 
+import Testing from "./components/Testing.jsx";
+import {ErrorPageTest} from "./components/ErrorPageTest.jsx";
+// import Chart from "./components/Chart.jsx";
+import {localStore} from "./store.js";
+import {ErrorBoundary} from "react-error-boundary";
+
+const LazyChart = lazy(() => import('./components/Chart.jsx'))
 
 function App(props) {
 
-    const testState = useSelector((store) => store.test);
+    const {colorMode, toggleColorMode} = localStore((state) =>({
+            colorMode: state.colorMode,
+            toggleColorMode: state.toggleColorMode
+    }));
 
-return (
+    return (
+        <div className={`${colorMode} App`}>
+            <div>
+                <Link to={"/"}>Home</Link>
+                <Link to={"/about"}>About</Link>
+                <Link to="/test">Test</Link>
+                <Link to="/chart">chart</Link>
+            </div>
+                <Routes>
+                    <Route path={"/"} element={<Home/>}/>
+                    <Route path="/test" element={<Testing/>}/>
+                    <Route path="/chart" element={
+                        <ErrorBoundary fallback={<p>⚠️Something went wrong</p>}>
+                            <Suspense fallback={<div></div>}>
+                                <LazyChart/>
 
-    <div className={`${testState.colorMode} App`}>
-        <RoutesHeader/>
+                            </Suspense>
+                        </ErrorBoundary>
+                    }/>
+                    <Route path="*" element={<ErrorPageTest/>}/>
+                </Routes>
 
-        <Routes>
-            <Route path={"/"} element={<Home/>}/>
-            <Route path={"/testing"} element={<Testing/>}/>
-            <Route path={"/products"} element={<ProductsRouter/>}/>
-            <Route path={"/products/:productId"} element={<ProductsDetails/>}/>
-            <Route path={"/ErrorPage"} element={<ErrorPageTest/>}/>
-            <Route path={"*"} element={<ErrorPageTest/>}/>
-        </Routes>
-
-
-    </div>
-)
+        </div>
+    )
 }
 
 

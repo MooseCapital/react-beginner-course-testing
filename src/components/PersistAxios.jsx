@@ -22,7 +22,7 @@ function persistAxiosData(apiLink) {
             async function getAxiosData() {
                 let res = await axios.get(`${import.meta.env.VITE_API_LINK}${apiLink}`, {
                     headers:{
-                    "x-api-key" : 'ZKmorbO6RtKTwqBPZo75'
+                    "x-api-key" : import.meta.env.VITE_API_KEY
                     },
                     signal: abortController.signal
                 });

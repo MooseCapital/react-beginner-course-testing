@@ -824,3 +824,14 @@ margin: 0 13px;
 */
 
 
+.chart-holder {
+height: 600px;
+width: 100%;
+}
+.skeleton {
+height: 100%;
+
+}
+
+
+

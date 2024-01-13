@@ -18,6 +18,7 @@ function persistAxiosData(apiLink) {
     useEffect(() => {
         const abortController = new AbortController()
         try {
+
             async function getAxiosData() {
                 let res = await axios.get(`${import.meta.env.VITE_API_LINK}${apiLink}`, {
                     headers:{

@@ -9,7 +9,8 @@ import useCounter from "./hooks/useCounter.jsx";
 import useTypingGame from "./hooks/useTypingGame.js";
 import {Link, Route, Routes, BrowserRouter as Router} from "react-router-dom";
 import Home from "./components/Home.jsx";
-import '@fontsource/inter/500.css';
+import '@fontsource/inter';
+
 import RoutesHeader from "./components/RoutesHeader.jsx";
 import ProfileRoute from "./components/ProfileRoute.jsx";
 import SettingsRoute from "./components/SettingsRoute.jsx";

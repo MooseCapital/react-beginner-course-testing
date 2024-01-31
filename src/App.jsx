@@ -106,11 +106,11 @@ react 17 old way ->
 */
 
 //remember import & export basics
-    //export default for only one item per module file, can put export before function and not at page bottom
-    //export default does not need curly braces around it for export/import
-    //export/import normal, means we have many items, which needs curly braces wrapping.. easy!
-    //when we have so many items to type, we don't want to type 20.. so we do export ap as obj -
-        //this gives an object to use dot notation on any import items, like obj.Header
+//export default for only one item per module file, can put export before function and not at page bottom
+//export default does not need curly braces around it for export/import
+//export/import normal, means we have many items, which needs curly braces wrapping.. easy!
+//when we have so many items to type, we don't want to type 20.. so we do export ap as obj -
+//this gives an object to use dot notation on any import items, like obj.Header
 /*
 business card project
 
@@ -1743,33 +1743,122 @@ Practice review -
 
             *** This is the end of The Odin projects react course, I'm now moving to nodejs***
 
+        Zustand notes - zustand replaces redux due to being much simpler for us without slices
+       we will still learn react-query to handle data fetch from our api, which could in theory replace zustand
+        but we will use both for now
+
+        we create a store.js file -> I have made a createstore live template
+
+        -> we MUST use the spread operator with nested objects or something like immer
+            import {create} from 'zustand'
+            import {createJSONStorage, persist} from "zustand/middleware";
+
+          export const useStore = create(devtools((set) => ({
+                person: {age: 30, name: 'Michel', favNums: [4, 5]},
+                addAge: () => set((state) => ({
+                    person: {
+                        ...state.person,
+                        age: state.person.age + 1,
+                        favNums: [...state.person.favNums]
+                    }
+                }), false, 'add age'),
+
+            })))
+
+
+         note zustand has merging behavior, so when we reset the counter, we don't need to do spread operator {...state, counter: 0} -> we can just do {counter: 0}
+            doing the above, zustand merges previous state, so we keep name: 'bob' and only change counter to 0
+            -> in react state, we would have to spread ...prevState, to keep all other state properties,
+
+        -> when we make persist, we should wrap it in devtools first, so we can see the state changes in redux devtools
+             the 'false' after the state setter, 'resetCounter' means, do not batch state changes
+                 when this was true, the toggle color mode would batch changes, and it did not change
+                 when we set it to false, it worked as expected
+
+            ->the string after true/false is a debugger name, so we can see what state setter is being called in redux devtools
+
+                export const sessionStore = create(devtools(persist((set, get) => ({
+                name: 'bob',
+                counter: 0,
+                resetCounter: () => set((state) => ({
+                    ...state,
+                    counter: 0
+                }), false, 'reset counter'),
+                incrementCounter: () => set((state) => ({
+                    ...state,
+                    counter: state.counter + 1
+                }), false, 'increment counter'),
+
+            }),
+            {
+                name: 'app-session-storage',
+                storage: createJSONStorage(() => sessionStorage),
+            },
+        )))
+
+
+
+
+       -> we see, if we set the state we don't need to do {...state, counter: 0} -> we can just do {counter: 0}
+       -> we must remember in regular state the default way so we don't mutate state, like zustand lets us.
+
+   inside the actual component:
+        Never access the entire store, it will re-render when state in the same store in another component changes
+            const { counter, username } = sessionStore((state) => state); XXXXXX
+
+       -> we make sure to import store from store.js and not zustand. I made a livetemplate for usestore as well
+         -> if this is a big store, we will re-render a lot, so we should select the state we need from the store this way
+         -> we use the destructure method here, but we can use the single way, but the single way does NOT let us access multiple states
+             const { counter } = sessionStore((state) => ({ counter: state.counter }));
+
+      *** The best solution is to access each state we will use, so like above, only access the state we need, not the entire store
+            const { counter, username } = sessionStore((state) => ({
+              counter: state.counter,
+              username: state.username,
+            }));
+            -> can be written separately as:
+                const counter = sessionStore((state) => state.counter);
+                const username = sessionStore((state) => state.username);
+
+
+            <button className={"test-btn"} onClick={toggleColorMode}>toggle color mode
+            </button>
+            <p>{`current state: ${colorMode}`}</p>
+
+-------------------------------------------------------------------------------------------------------
+
             React error boundary - we use this so errors dont crash the entire website, instead if we put them around each route
                 -> we can have a custom error page, or a fallback component that shows a message to the user, and we can log the error
                 -> we also have a wrapper for the whole page that shows a neat error page telling the user to refresh or close and try again
+                -> we must make sure if we need suspense around each route, and if we even need error boundarys at the entire page level or more local
+                     -> remember having error boundarys locally prevents the entire app from breaking so the user can stil navigate
+
+               *** when we get an error we need to let the user click a button to reset state and call the api again. or else they are stuck forever!
+                   -> this video helps us https://www.youtube.com/watch?v=1_dLaSjzOMY , https://www.npmjs.com/package/react-error-boundary
+                   -> we also need the Error boundary fallback which has a reset button, and we need to pass the reset function to the fallback component
+                    -> our component may be complex and have different shaped skeletons, so we make 1 bigger skeleton fallback component with them all in 1
+
+                  <ErrorBoundary fallbackComponent={ErrorFallback} onReset={() => setCurrentUserId(0)}>
+                      <Suspense fallback={<SkeletonComponent/>}>
+                        <Posts currentUserId={currentUserId}
+                    </Suspense>
+                    </ErrorBoundary>
+
+                The fallback will have a button and say the error: and we can reset the component to what it looked like before, while reseting the state ourself
+                    <div role="alert">
+                      <p>Something went wrong:</p>
+                      <pre style={{ color: "red" }}>{error.message}</pre>
+                      <button onClick={() => resetErrorBoundary()}>Retry</button>
+                    </div>
 
                 npm install react-error-boundary
-                we wrap the entire app and have a custom page for it,
+                we wrap the entire app and have a custom page for it, similar to a standard 404 error page
                         <ErrorBoundary fallback={<CustomPageFallback/>}>
-                        <App/>
+                            <App/>
                         </ErrorBoundary>
 
 
-                now we wrap each route in the error boundary, so if one route has an error, it doesn't crash the whole app
 
-                    import {ErrorBoundary} from "react-error-boundary";
-                    const LazyChart = lazy(() => import('./components/Chart.jsx'))
-
-                    <Route path="/chart" element={
-                            <ErrorBoundary fallback={<p>⚠️Something went wrong</p>}>
-                                <Suspense fallback={<div></div>}>
-                                    <LazyChart/>
-                                </Suspense>
-                            </ErrorBoundary>
-                        }/>
-
-                * now we add suspense in, since we will 100% be using lazy load so the user doesnt waste bandwidth
-                -> when they might not even visit some of our pages, we don't want to spend our resources and hurt loading times
-                -> remember when our component was failing we lazy loaded, but did not use suspense. REMEMBER THIS!
 
                 Now inside the Chart component we must lazy load its dependencies, such as the chart library
                     -> if we don't, then even thought we lazy load Charts component, the library is loaded by simply going
@@ -1777,25 +1866,76 @@ Practice review -
 
                 const LazyReactECharts = React.lazy(() => import('echarts-for-react'));
 
-                -> ** we must not forget our suspense on a lazy loaded component again!
-                    <Suspense fallback={<div>loading...</div>}>
-                        <LazyReactECharts option={chartOptions} style={{ height: '600px', width: '100%' }} />
-                     </Suspense>
-
-
              Lazy load - since we are lazy loading, we now know to always use suspense, even if we don't really want a fallback we can leave it blank
-                 but vite needs to know to give us time to wait for the lazy loaded code, so we must add this to vite.config.js
-                 optimizeDeps: {
-                    include: ['echarts-for-react'], // Add your dependencies here
-                  },
-                  // Set the suspense timeout
-                  suspense: { timeout: 10000 },
-                  experiments: {
-                    optimizeDeps: {
-                      entries: ['echarts-for-react'], // Add your dependencies here
-                      experimentalCodeSplitting: true,
-                    },
-                  },
+                *** it should be important to note, one user said we should not code split every route this way unless the user has to click a button to access the page
+                    -> we want the landing page to be as fast as possible, so we should code split everything we can, and lazy load it
+                   *Remember, do NOT pre optimize, build the app normally then see our whole package size and decide if to code split,
+                        -> error boundarys and suspense can be used without splitting, suspense will wait for async request AND for the code to load(which is fast)
+                            -> so suspense is replacing our loading state for waiting on the api call
+
+                   vite needs to know to give us time to wait for the lazy loaded code, so we must add this to vite.config.js
+                     optimizeDeps: {
+                        include: ['echarts-for-react'], // Add your dependencies here
+                      },
+                      // Set the suspense timeout
+                      suspense: { timeout: 10000 },
+                      experiments: {
+                        optimizeDeps: {
+                          entries: ['echarts-for-react'], // Add your dependencies here
+                          experimentalCodeSplitting: true,
+                        },
+                      },
+
+
+          Floating points decimal fix & bigInt -
+                In JavaScript, all numbers are stored in a 64-bit floating-point format (IEEE 754 standard)
+                   all numbers positive or negative can be up to 15 digits before
+
+                    -> these are regular numbers in js
+                        let x = 999999999999999 -> logs 999999999999999 because 15 digits
+                        let y = 9999999999999999 -> logs 10000000000000000 because 16 digits
+                        let z = 999999999999999999999 -> logs 1e+21 because 21 digits
+
+                -> when we want to use numbers bigger than 15 digits, we can use bigInt
+                    -> bigInt is created in 2 ways, by appending n to a number or putting it inside bigInt()
+                        let bigX = 12345678901234567890123456789n -> logs 12345678901234567890123456789
+                        let bigY = BigInt(1234567890123456789012345)  -> logs 1234567890123456789012345
+
+                        typeOf x -> number
+                        typeOf bigX -> bigInt
+                -> math between bigInt and a number are not possible and give error -Uncaught TypeError: Cannot mix BigInt and other types, use explicit conversions
+                -> to do this math we need to convert the bigInt
+                    let x = 5n;
+                    let y = Number(x) / 2;
+
+                -> if we need to check numbers to see if they're in 15 digit range or NOT a decimal, we can use
+                    Number.isSafeInteger() -> which gives true/false
+                -> we access the maximum/minimum number allowed to be a number and not bigInt
+                    let x = Number.MIN_SAFE_INTEGER;
+                    let x = Number.MAX_SAFE_INTEGER;
+
+        Floating point decimals -
+               -> When doing math in js, we notice adding 0.01 + 0.02 does not give 0.03 it gives 0.030000000000000004
+               -> to get what we want, we can use packages like decimal.js or others here https://github.com/MikeMcl/big.js/wiki
+               -> if we have simple math we know the decimal places, then we can add whole numbers, then divide by what we need
+                       let c = 1
+                        let d = 2
+                        let dec = (c + d) / 100 -> 0.3
+
+                -> if we don't need advanced math, big.js might be enough for decimals https://www.npmjs.com/package/big.js?activeTab=readme
+
+                    npm install big.js
+                -> pick the rounding method we want, such as roundHalfUp, roundHalfEven, roundHalfDown, roundUp, roundDown
+                    Big.RM = Big.roundHalfUp
+
+                -> simply create decimals with new Big()
+                    let num1 = new Big(0.1);
+                    let num2 = new Big(0.2)
+                    console.log(num1.plus(num2).toFixed(5)) -> 0.300
+
+                -> our problems with floating point math are fixed. use toFixed() to get decimal places we want, or toPrecision() to get total numbers we want
+                -> simply chain math methods and put toFixed() at the end
+                    num1.div(num2).plus(0.5).times(9).toFixed(4)
 
   */
 
@@ -1804,14 +1944,22 @@ import {ErrorPageTest} from "./components/ErrorPageTest.jsx";
 // import Chart from "./components/Chart.jsx";
 import {localStore} from "./store.js";
 import {ErrorBoundary} from "react-error-boundary";
+import Big from 'big.js';
 
 const LazyChart = lazy(() => import('./components/Chart.jsx'))
 
 function App(props) {
 
-    const {colorMode, toggleColorMode} = localStore((state) =>({
-            colorMode: state.colorMode,
-            toggleColorMode: state.toggleColorMode
+
+    Big.RM = Big.roundHalfUp
+    let num1 = new Big(0.1);
+    let num2 = new Big(0.1)
+    console.log(num1.plus(num2).toFixed(3))
+    console.log("hello world")
+
+    const {colorMode, toggleColorMode} = localStore((state) => ({
+        colorMode: state.colorMode,
+        toggleColorMode: state.toggleColorMode
     }));
 
     return (
@@ -1822,19 +1970,18 @@ function App(props) {
                 <Link to="/test">Test</Link>
                 <Link to="/chart">chart</Link>
             </div>
-                <Routes>
-                    <Route path={"/"} element={<Home/>}/>
-                    <Route path="/test" element={<Testing/>}/>
-                    <Route path="/chart" element={
-                        <ErrorBoundary fallback={<p>⚠️Something went wrong</p>}>
-                            <Suspense fallback={<div></div>}>
-                                <LazyChart/>
-
-                            </Suspense>
-                        </ErrorBoundary>
-                    }/>
-                    <Route path="*" element={<ErrorPageTest/>}/>
-                </Routes>
+            <Routes>
+                <Route path={"/"} element={<Home/>}/>
+                <Route path="/test" element={<Testing/>}/>
+                <Route path="/chart" element={
+                    <ErrorBoundary fallback={<p>⚠️Something went wrong</p>}>
+                        <Suspense fallback={<div></div>}>
+                            <LazyChart/>
+                        </Suspense>
+                    </ErrorBoundary>
+                }/>
+                <Route path="*" element={<ErrorPageTest/>}/>
+            </Routes>
 
         </div>
     )

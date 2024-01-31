@@ -18,7 +18,7 @@ function Chart(props) {
         setFetchData: state.setFetchData,
         resetFetchData: state.resetFetchData,
     }));
-    persistAxiosData('/lottery');
+    persistAxiosData('/api/lottery');
 
     function getDate() {
         const datesArray = fetchData?.map((item) => (
@@ -147,7 +147,7 @@ function Chart(props) {
 //match mui skeleton colors using react loading skeleton, baseColor={'#cdd7e1'} highlightColor={'#B3BBC2'}
     return (
         <div className={"chart-holder"}>
-                <Suspense fallback={<Skeleton height={'100%'} duration={1.5}  ></Skeleton>}>
+                <Suspense fallback={<Skeleton height={'100%'} duration={1.2}  ></Skeleton>}>
                     <LazyReactECharts option={chartOptions} style={{height: '100%', width: '100%'}}/>
                 </Suspense>
         </div>

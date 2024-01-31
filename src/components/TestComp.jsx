@@ -1,6 +1,6 @@
-import {Fragment, useState} from "react";
+import React, {Fragment, useState} from "react";
 import {unstable_renderSubtreeIntoContainer} from "react-dom";
-
+import Chart from 'echarts-for-react'
 function TestComp(props) {
 
 
@@ -9,6 +9,7 @@ function TestComp(props) {
         <div className="test-container">
            <p>what is your name?</p>
             {props.children}
+            {false &&  <Chart></Chart>}
         </div>
     )
 }

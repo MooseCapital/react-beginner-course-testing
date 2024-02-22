@@ -18,7 +18,7 @@ function Chart(props) {
         setFetchData: state.setFetchData,
         resetFetchData: state.resetFetchData,
     }));
-    persistAxiosData('/api/lottery');
+    persistAxiosData('/api/v1/lottery');
 
     function getDate() {
         const datesArray = fetchData?.map((item) => (

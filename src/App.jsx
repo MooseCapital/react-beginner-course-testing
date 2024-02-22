@@ -7,7 +7,7 @@ import WithToggler from "./components/WithToggler.jsx";
 import Grandparent from "./components/Grandparent.jsx";
 import useCounter from "./hooks/useCounter.jsx";
 import useTypingGame from "./hooks/useTypingGame.js";
-import {Link, Route, Routes, BrowserRouter as Router, Outlet} from "react-router-dom";
+import {Link, Route, Routes, BrowserRouter as Router, Outlet, useLocation} from "react-router-dom";
 import Home from "./components/Home.jsx";
 import '@fontsource/inter';
 
@@ -1508,6 +1508,8 @@ Practice review -
                     https://reactrouter.com/en/main/components/navigate      https://stackoverflow.com/questions/62384395/protected-route-with-react-router-v6/64347082#64347082
                     this can ensure no random user can go to the cart/checkout page or access content unless they are logged in!
 
+
+
         Data fetching review -  https://www.developerway.com/posts/how-to-fetch-data-in-react
             -> when a component needs to make a request when it renders, its best to useEffect, this way we set array dependency to only run []
                 -> on the first render only
@@ -1868,12 +1870,12 @@ Practice review -
                 -> we can have a custom error page, or a fallback component that shows a message to the user, and we can log the error
                 -> we also have a wrapper for the whole page that shows a neat error page telling the user to refresh or close and try again
                 -> we must make sure if we need suspense around each route, and if we even need error boundarys at the entire page level or more local
-                     -> remember having error boundarys locally prevents the entire app from breaking so the user can stil navigate
+                     -> remember having error boundary's locally prevents the entire app from breaking so the user can still navigate
 
                *** when we get an error we need to let the user click a button to reset state and call the api again. or else they are stuck forever!
                    -> this video helps us https://www.youtube.com/watch?v=1_dLaSjzOMY , https://www.npmjs.com/package/react-error-boundary
                    -> we also need the Error boundary fallback which has a reset button, and we need to pass the reset function to the fallback component
-                    -> our component may be complex and have different shaped skeletons, so we make 1 bigger skeleton fallback component with them all in 1
+
 
                   <ErrorBoundary fallbackComponent={ErrorFallback} onReset={() => setCurrentUserId(0)}>
                       <Suspense fallback={<SkeletonComponent/>}>
@@ -1889,10 +1891,33 @@ Practice review -
                     </div>
 
                 npm install react-error-boundary
-                we wrap the entire app and have a custom page for it, similar to a standard 404 error page
-                        <ErrorBoundary fallback={<CustomPageFallback/>}>
-                            <App/>
+
+                we should have an app error boundary for 404 routes pages that don't exist, then one for each pages errors, then inside smaller components, so it wont
+                    -> break the entire page, but only the component that errored out.
+                    -> our main app 404 page should have a button that just navigates to the home page, NOT an automated countdown like we have for fun
+                    -> we can have one around all routes and around each route to be safe, but it should stop at the page level, which lets the user click links still
+
+                -> this goes around all the routes, so no navbar is shown, only a button to go back to the home page
+                -> because this is at the app level, and there was app breaking error, error boundary uses 'key' when key changes it will reset the boundary
+                    -> the key is 'location.pathname' , which react router is tracking, so the user clicks our button in the fallback component
+                    -> this changes the route to home page, but the app is still with the breaking error, even on the home page, the router has location as changed
+                    -> now the error boundary sees a new value for the key, which basically remounts components/refreshes. and were good again
+                    *remember, we should almost NEVER reach this, because we need an error boundary around each route so the user can still navigate the header
+                        -> if an error occurs
+
+                    const location = useLocation();
+                        <ErrorBoundary fallback={<ErrorPageTest/>} key={location.pathname} >
+                            <Routes>
+                            </Routes>
                         </ErrorBoundary>
+
+                This is the error boundary around each route, note it doesn't need the key now, because the navbar is still above it
+                    <Route path="/test" element={
+                            <ErrorBoundary fallback={<ErrorPageTest/>} onReset={() => console.log('test') }
+                            onError={(error, info) => console.log(error, info)} >
+                                <Testing/>
+                            </ErrorBoundary>
+                        }/>
 
 
 
@@ -1985,36 +2010,65 @@ import Big from 'big.js';
 
 const LazyChart = lazy(() => import('./components/Chart.jsx'))
 
-    Big.RM = Big.roundHalfUp
-    let num1 = new Big(0.1);
-    let num2 = new Big(0.1)
-    console.log(num1.plus(num2).toFixed(3))
-    console.log("hello world")
+/* Big.RM = Big.roundHalfUp
+let num1 = new Big(0.1);
+let num2 = new Big(0.1)
+console.log(num1.plus(num2).toFixed(3))
+console.log("hello world") */
+
 function App(props) {
 
+    const location = useLocation();
     const {colorMode, toggleColorMode} = localStore((state) => ({
         colorMode: state.colorMode,
         toggleColorMode: state.toggleColorMode
     }));
     return (
         <div className={`${colorMode} App`}>
+
+            <CompactPageErrorBoundary>
                 <Routes>
                     <Route path="/" element={<Layout/>}>
                         <Route index element={<Home/>}/>
-                        <Route path="/test" element={<Testing/>}/>
+                        <Route path="/test" element={
+                            <CompactPageErrorBoundary>
+                                <Testing/>
+                            </CompactPageErrorBoundary>
+                        }/>
                         <Route path="/chart" element={
-                            <ErrorBoundary fallback={<p>⚠️Something went wrong</p>}>
+                            <CompactPageErrorBoundary>
                                 <Suspense fallback={<div></div>}>
                                     <LazyChart/>
                                 </Suspense>
-                            </ErrorBoundary>
+                            </CompactPageErrorBoundary>
                         }/>
-                        {/* * is for any path that is NOT defined, if the user types it in the search bar, we redirec to 404 error page */}
+                        {/* * is for any path that is NOT defined, if the user types it in the search bar, we redirect to 404 error page */}
                         <Route path="*" element={<ErrorPageTest/>}/>
                     </Route>
                 </Routes>
+            </CompactPageErrorBoundary>
+
         </div>
     )
+}
+
+
+const logError = (error, info) => {
+        // Do something with the error, e.g. log to an external API
+        console.log( info);
+    };
+
+function CompactPageErrorBoundary(props) {
+    return (
+        <ErrorBoundary fallback={<ErrorPageTest/>} key={location.pathname}
+                       onReset={() => {
+                           console.log('test')
+                       }}
+                       onError={logError}>
+            {props.children}
+        </ErrorBoundary>
+    )
+
 }
 
 function Layout({children}) {
@@ -2025,7 +2079,6 @@ function Layout({children}) {
                     NavLink lets us style depending on "active" or "pending" state
                  */}
                 <Link to="/">Home</Link>
-                <Link to="/about">About</Link>
                 <Link to="/test">Test</Link>
                 <Link to="/chart">chart</Link>
             </header>

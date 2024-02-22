@@ -1,42 +1,16 @@
 import {useContext, useEffect, useState, useRef} from 'react'
-import {Navigate} from "react-router-dom";
+import {Navigate, useNavigate} from "react-router-dom";
 
-function ErrorPageTest(props) {
-
-    const [countDown, setCountDown] = useState(5)
-
-    useEffect(() => {
-       let timeout = setTimeout(() => setCountDown((prev) => prev - 1 ),1000)
-
-        return () => {
-            clearTimeout(timeout)
-        }
-    },[countDown])
+function ErrorPageTest({resetErrorBoundary}) {
+const navigate = useNavigate();
 
     return (
         <>
         <div>Page does not exist. </div>
-        <div>Redirecting in {countDown}..</div>
-        {countDown === 0 &&
-        <Navigate to="/" replace={true} />
-        }
+        <button className={'button'} onClick={() => navigate('/')}>go home</button>
+        <button className={'button'} onClick={resetErrorBoundary}>Try again</button>
         </>
     )
 }
 
 export {ErrorPageTest}
-
-
-
-
-//validate prop types are correct variable passed in
-// https://www.freecodecamp.org/news/how-to-use-proptypes-in-react/
-ErrorPageTest.propTypes = {
-//item: PropTypes.object
-
-}
-
-//set default prop if none are passed in, (will always render default)
-ErrorPageTest.defaultProps = {
-
-}

@@ -1,6 +1,6 @@
 import {useContext, useEffect, useState, useRef, startTransition} from 'react'
 import PropTypes from "prop-types";
-import {localStore, sessionStore} from "../store.js";
+import {localStore, sessionStore, normalStore} from "../store.js";
 
 function Home(props) {
 
@@ -21,7 +21,7 @@ function Home(props) {
             toggleColorMode: state.toggleColorMode
     }));
 
-    const {counter, incrementCounter} = sessionStore((state) =>({
+    const {counter, incrementCounter} = normalStore((state) =>({
             counter: state.counter,
             incrementCounter: state.incrementCounter
     }));

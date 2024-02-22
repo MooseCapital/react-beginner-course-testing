@@ -7,9 +7,11 @@ import Skeleton from "react-loading-skeleton";
 
 
 function Testing(props) {
+    function errorTest() {
+    throw new Error('testing error')
 
-    // persistAxiosData('/lottery');
-    const chartOptions = {1: 1}
+    }
+    errorTest()
     return (
         <div>
             <div> testing</div>

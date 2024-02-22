@@ -7,7 +7,7 @@ import WithToggler from "./components/WithToggler.jsx";
 import Grandparent from "./components/Grandparent.jsx";
 import useCounter from "./hooks/useCounter.jsx";
 import useTypingGame from "./hooks/useTypingGame.js";
-import {Link, Route, Routes, BrowserRouter as Router} from "react-router-dom";
+import {Link, Route, Routes, BrowserRouter as Router, Outlet} from "react-router-dom";
 import Home from "./components/Home.jsx";
 import '@fontsource/inter';
 
@@ -1395,6 +1395,43 @@ Practice review -
                               // This runs on mount *and also* if either a or b have changed since the last render
                             }, [a, b]);
 
+            React router Outlet vs children & nested routes correct format
+                    -> instead of wrapping our routes with the header & footer 'Layout' component
+                    -> we put a main / path with layout component, and inside the layout, we put <Outer/>
+                    -> this means all nested routes will be rendered inside the layout, and we can use the layout to wrap all of our pages
+                    function App(props) {
+
+                        return (
+                            <div className={`${colorMode} App`}>
+                                    <Routes>
+                                        <Route path="/" element={<Layout/>}>
+                                            <Route index element={<Home/>}/>
+                                            <Route path="/test" element={<Testing/>}/>
+                                            <Route path="*" element={<ErrorPageTest/>}/>
+                                        </Route>
+                                    </Routes>
+                            </div>
+                        )
+                    }
+
+                    function Layout({children}) {
+                        return (
+                            <>
+                                <header>
+                                     Link vs NavLink, link is react equivalent to A tag for routing,
+                                        NavLink lets us style depending on "active" or "pending" state
+
+                                    <Link to="/">Home</Link>
+                                    <Link to="/about">About</Link>
+                                    <Link to="/test">Test</Link>
+                                    <Link to="/chart">chart</Link>
+                                </header>
+
+                                <Outlet/>
+                            </>);
+
+
+
 
         Testing in react review - vitest            https://www.robinwieruch.de/vitest-react-testing-library/
           1)      npm install vitest --save-dev
@@ -1948,45 +1985,61 @@ import Big from 'big.js';
 
 const LazyChart = lazy(() => import('./components/Chart.jsx'))
 
-function App(props) {
-
-
     Big.RM = Big.roundHalfUp
     let num1 = new Big(0.1);
     let num2 = new Big(0.1)
     console.log(num1.plus(num2).toFixed(3))
     console.log("hello world")
+function App(props) {
 
     const {colorMode, toggleColorMode} = localStore((state) => ({
         colorMode: state.colorMode,
         toggleColorMode: state.toggleColorMode
     }));
-
     return (
         <div className={`${colorMode} App`}>
-            <div>
-                <Link to={"/"}>Home</Link>
-                <Link to={"/about"}>About</Link>
-                <Link to="/test">Test</Link>
-                <Link to="/chart">chart</Link>
-            </div>
-            <Routes>
-                <Route path={"/"} element={<Home/>}/>
-                <Route path="/test" element={<Testing/>}/>
-                <Route path="/chart" element={
-                    <ErrorBoundary fallback={<p>⚠️Something went wrong</p>}>
-                        <Suspense fallback={<div></div>}>
-                            <LazyChart/>
-                        </Suspense>
-                    </ErrorBoundary>
-                }/>
-                <Route path="*" element={<ErrorPageTest/>}/>
-            </Routes>
-
+                <Routes>
+                    <Route path="/" element={<Layout/>}>
+                        <Route index element={<Home/>}/>
+                        <Route path="/test" element={<Testing/>}/>
+                        <Route path="/chart" element={
+                            <ErrorBoundary fallback={<p>⚠️Something went wrong</p>}>
+                                <Suspense fallback={<div></div>}>
+                                    <LazyChart/>
+                                </Suspense>
+                            </ErrorBoundary>
+                        }/>
+                        {/* * is for any path that is NOT defined, if the user types it in the search bar, we redirec to 404 error page */}
+                        <Route path="*" element={<ErrorPageTest/>}/>
+                    </Route>
+                </Routes>
         </div>
     )
 }
 
+function Layout({children}) {
+    return (
+        <>
+            <header>
+                {/* Link vs NavLink, link is react equivalent to A tag for routing,
+                    NavLink lets us style depending on "active" or "pending" state
+                 */}
+                <Link to="/">Home</Link>
+                <Link to="/about">About</Link>
+                <Link to="/test">Test</Link>
+                <Link to="/chart">chart</Link>
+            </header>
+            {/* react components rendered between */}
+            {/* Outlet is a better alternative to children, so we don't wrap all routes with Layout
+                it's an explicit and structured way to handle nested routes
+             */}
+            <Outlet/>
+            {/* footer code here */}
+        </>
+
+    )
+
+}
 
 
 export default App

@@ -30,9 +30,9 @@ function Home(props) {
         <>
             <h3>home page</h3>
 
-            <button onClick={toggleColorMode}>toggle color mode</button>
+            <button className={'button'} onClick={toggleColorMode}>toggle color mode</button>
             <div>{`${formTest.firstName} ${formTest.lastName}`}</div>
-            <button onClick={incrementCounter} >{`increase counter: ${counter}`}</button>
+            <button className={'button'} onClick={incrementCounter} >{`increase counter: ${counter}`}</button>
         </>
     )
 }

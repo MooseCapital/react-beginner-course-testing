@@ -3,14 +3,15 @@ import {createJSONStorage, persist, devtools} from "zustand/middleware";
 
 export const normalStore = create(devtools((set) => ({
     counter: 0,
-    resetCounter: () => set((state) => ({
+    resetNormalState: () => set((state) => ({
         ...state,
         counter: 0
-    }), false, 'reset counter'),
+    }),false,'resetNormalState'),
     incrementCounter: () => set((state) => ({
         ...state,
         counter: state.counter + 1,
     }), false, 'increment counter'),
+
     person: {age: 30, name: 'Michel', favNums: [4, 5]},
 
 })))

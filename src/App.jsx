@@ -1866,67 +1866,69 @@ Practice review -
 
 -------------------------------------------------------------------------------------------------------
 
-            React error boundary - we use this so errors dont crash the entire website, instead if we put them around each route
-                -> we can have a custom error page, or a fallback component that shows a message to the user, and we can log the error
-                -> we also have a wrapper for the whole page that shows a neat error page telling the user to refresh or close and try again
-                -> we must make sure if we need suspense around each route, and if we even need error boundarys at the entire page level or more local
-                     -> remember having error boundary's locally prevents the entire app from breaking so the user can still navigate
-
+            React error boundary - we use this so errors dont crash the entire website, instead users see the error page
                *** when we get an error we need to let the user click a button to reset state and call the api again. or else they are stuck forever!
                    -> this video helps us https://www.youtube.com/watch?v=1_dLaSjzOMY , https://www.npmjs.com/package/react-error-boundary
                    -> we also need the Error boundary fallback which has a reset button, and we need to pass the reset function to the fallback component
-
-
-                  <ErrorBoundary fallbackComponent={ErrorFallback} onReset={() => setCurrentUserId(0)}>
-                      <Suspense fallback={<SkeletonComponent/>}>
-                        <Posts currentUserId={currentUserId}
-                    </Suspense>
-                    </ErrorBoundary>
-
-                The fallback will have a button and say the error: and we can reset the component to what it looked like before, while reseting the state ourself
-                    <div role="alert">
-                      <p>Something went wrong:</p>
-                      <pre style={{ color: "red" }}>{error.message}</pre>
-                      <button onClick={() => resetErrorBoundary()}>Retry</button>
-                    </div>
-
                 npm install react-error-boundary
 
-                we should have an app error boundary for 404 routes pages that don't exist, then one for each pages errors, then inside smaller components, so it wont
-                    -> break the entire page, but only the component that errored out.
-                    -> our main app 404 page should have a button that just navigates to the home page, NOT an automated countdown like we have for fun
-                    -> we can have one around all routes and around each route to be safe, but it should stop at the page level, which lets the user click links still
+                The main/component error page: includes a button to reset state, and button to navigate back to the home page if it fails,
+                function ErrorPageTest({resetErrorBoundary}) {
+                    const navigate = useNavigate();
+                            <div>Page does not exist. </div>
+                            <button className={'button'} onClick={() => navigate('/')}>go home</button>
+                            <button className={'button'} onClick={resetErrorBoundary}>Try again</button>
+                    }
+                we should have an app error boundary for 404 routes pages that don't exist, with a button that goes back to home page, no reset state button
 
-                -> this goes around all the routes, so no navbar is shown, only a button to go back to the home page
-                -> because this is at the app level, and there was app breaking error, error boundary uses 'key' when key changes it will reset the boundary
-                    -> the key is 'location.pathname' , which react router is tracking, so the user clicks our button in the fallback component
+                -> One boundary goes around all routes, incase we missed something, then each route needs one, and so on for each small component with it's unique fallback
+
+                -> because this is at the app level, and there was app breaking error, error boundary uses 'key'. when key changes it will reset the boundary
+                    -> the key is 'location.pathname' , which react router will set to the current path, the user clicks our button in the fallback component
                     -> this changes the route to home page, but the app is still with the breaking error, even on the home page, the router has location as changed
-                    -> now the error boundary sees a new value for the key, which basically remounts components/refreshes. and were good again
-                    *remember, we should almost NEVER reach this, because we need an error boundary around each route so the user can still navigate the header
-                        -> if an error occurs
+                    -> now the error boundary sees a new value for the key, which basically remounts/refreshes components. and were good again
 
-                    const location = useLocation();
-                        <ErrorBoundary fallback={<ErrorPageTest/>} key={location.pathname} >
-                            <Routes>
-                            </Routes>
-                        </ErrorBoundary>
+                -> we import the state from zustand or wherever it is, we can pass the prop down, but it must be in this component, so we can reset the state
+                    ->onReset will be triggered when user clicks the reset button with resetErrorBoundary, that connects it, we could do the same without this
+                    -> it's a more specific explicit way to reset the state in the boundary
+                    -> now log the error and users details to our log service to monitor like sentry.
 
-                This is the error boundary around each route, note it doesn't need the key now, because the navbar is still above it
-                    <Route path="/test" element={
-                            <ErrorBoundary fallback={<ErrorPageTest/>} onReset={() => console.log('test') }
-                            onError={(error, info) => console.log(error, info)} >
-                                <Testing/>
+                //instead of making a state setter, that MUST reset all our normal state, we can just reload the page
+                    //because we might forget some state to reset, however, if we have a large app, we might not want a reload
+                    // then a specific state reset might be better
+
+                    function CompactPageErrorBoundary(props) {
+                        const {resetNormalState} = normalStore((state) => ({
+                            resetNormalState: state.resetNormalState
+                        }));
+
+                        const resetNormalState = () => {window.location.reload()}
+                        return (
+                            <ErrorBoundary FallbackComponent={ErrorPageTest} key={location.pathname}
+                                           onReset={resetNormalState}
+                                           onError={logError}>
+                                {props.children}
                             </ErrorBoundary>
-                        }/>
+                        )
+                    }
+
+                This is what a normal route will look like, we use suspense as well to have a skeleton loader
+                        <Route path="/chart" element={
+                                <CompactPageErrorBoundary>
+                                    <Suspense fallback={<div></div>}>
+                                        <LazyChart/>
+                                    </Suspense>
+                                </CompactPageErrorBoundary>
+                            }/>
 
 
 
 
-                Now inside the Chart component we must lazy load its dependencies, such as the chart library
-                    -> if we don't, then even thought we lazy load Charts component, the library is loaded by simply going
-                    -> to our home page, which makes it useless, lazy load all its packages!!
+            Now inside the Chart component we must lazy load its dependencies, such as the chart library
+                -> if we don't, then even thought we lazy load Charts component, the library is loaded by simply going
+                -> to our home page, which makes it useless, lazy load all its packages!!
 
-                const LazyReactECharts = React.lazy(() => import('echarts-for-react'));
+            const LazyReactECharts = React.lazy(() => import('echarts-for-react'));
 
              Lazy load - since we are lazy loading, we now know to always use suspense, even if we don't really want a fallback we can leave it blank
                 *** it should be important to note, one user said we should not code split every route this way unless the user has to click a button to access the page
@@ -1947,7 +1949,27 @@ Practice review -
                           experimentalCodeSplitting: true,
                         },
                       },
+                we can NOT lazy load the error pages, when we navigate to a 404 page, it's still loadingthe error page instead of showing it, so it doens't show
+                    //do NOT lazy load error pages or we will get errors
+                    import ErrorPage from "./components/ErrorPage.jsx";
+                    import ErrorPage404 from "./components/ErrorPage404.jsx";
 
+                    NEVER DO THIS***
+                    const ErrorPageLazy = lazy(() => import('./components/ErrorPage.jsx'));
+
+           Image compression - we made our own compress component with input inside CompressImage.jsx
+
+           react toastify alerts -  react-toastify  ->  https://fkhadra.github.io/react-toastify/introduction
+                      import { ToastContainer, toast } from 'react-toastify';
+                       import 'react-toastify/dist/ReactToastify.css';
+
+            lazy load images -
+                import {LazyLoadImage} from 'react-lazy-load-image-component';
+                import 'react-lazy-load-image-component/src/effects/blur.css';
+                lazy load images with packages, so they don't waste bandwidth unless user scrolls it into view, remember, make low kb placeholder
+                    image https://www.npmjs.com/package/react-lazy-load-image-component
+                 then use effect='blur' for nice looks, until image loads when scrolling ->  https://squoosh.app/
+                <LazyLoadImage src={props?.image_url} placeholderSrc={props?.image2} alt="" effect={"blur"} />
 
           Floating points decimal fix & bigInt -
                 In JavaScript, all numbers are stored in a 64-bit floating-point format (IEEE 754 standard)
@@ -1999,12 +2021,36 @@ Practice review -
                 -> simply chain math methods and put toFixed() at the end
                     num1.div(num2).plus(0.5).times(9).toFixed(4)
 
+        Algorithms - we should know of basic algorithms and WHEN to use them, since we mostly have small data arrays and will never notice any difference
+                    -> according to some answers, chromes v8 engine will speed up operations on arrays 50,000 items, but what about our backend expressjs?
+                    -> so we should make
+                     a mental note to start using these algos when we have as little as 1000 items, much before that is just unnecessary headache.
+                Searching Arrays - when the array is smaller such as under 1000 items, find() and indexOf() will be fine, when it our data is larger, we need
+                    an algo like binary search, but the array MUST be sorted to work, so we sort first before searching.
+                    linked list do NOT work for searching, since they still need to search 1 by 1, so search algos on normal arrays are better
+                    npm i binary-search   https://www.npmjs.com/package/binary-search
+
+                Array mutation methods -These modify the array, which is slow. push(), pop, unshift, shift, splice, forEach,
+                    -> we will use this package that contains many algos for us to use, such as linked list, which we use for the above array methods
+                    https://www.npmjs.com/package/js-sdsl   https://js-sdsl.org/js-sdsl/modules.html
+
+                Linked list - replace push, pop etc.. when we need to move items inside an array, we now move a single node in the linked list, not the ENTIRE
+                    array around, which is much faster
+
+                Array statistics -  this library lets us easily get stats from an array like min, mean, max, median, and easily converts
+                        strings of numbers, while  ignoring NaN and empty data. https://www.npmjs.com/package/d3-array
+
+                        we can also, count certain items, sort items by groups, and modify nested object data easily with this library
+                        if we have more advanced sorting methods, this is what to use, otherwise use sort()
+
+
+
   */
 
 import Testing from "./components/Testing.jsx";
 import {ErrorPageTest} from "./components/ErrorPageTest.jsx";
 // import Chart from "./components/Chart.jsx";
-import {localStore} from "./store.js";
+import {localStore, normalStore} from "./store.js";
 import {ErrorBoundary} from "react-error-boundary";
 import Big from 'big.js';
 
@@ -2023,6 +2069,9 @@ function App(props) {
         colorMode: state.colorMode,
         toggleColorMode: state.toggleColorMode
     }));
+
+
+
     return (
         <div className={`${colorMode} App`}>
 
@@ -2053,22 +2102,26 @@ function App(props) {
 }
 
 
-const logError = (error, info) => {
-        // Do something with the error, e.g. log to an external API
-        console.log( info);
-    };
+const logError = (Error, info) => {
+    // Do something with the error, e.g. log to an external API
+    // console.log(`error message: ${Error.message}`)
+    console.log(Error)
+    console.log(info);
+};
 
 function CompactPageErrorBoundary(props) {
+    /* const {resetNormalState} = normalStore((state) => ({
+        resetNormalState: state.resetNormalState
+    })); */
+
+    const resetNormalState = () => window.location.reload();
     return (
-        <ErrorBoundary fallback={<ErrorPageTest/>} key={location.pathname}
-                       onReset={() => {
-                           console.log('test')
-                       }}
+        <ErrorBoundary FallbackComponent={ErrorPageTest} key={location.pathname}
+                       onReset={resetNormalState}
                        onError={logError}>
             {props.children}
         </ErrorBoundary>
     )
-
 }
 
 function Layout({children}) {
@@ -2098,222 +2151,6 @@ function Layout({children}) {
 export default App
 
 
-
-
-/*
-Typing game
-const [wordCount, setWordCount, isStarted, setIsStarted, timeRemaining, setTimeRemaining, STARTING_TIME, textData, textRef, handleChange, startGame  ] = useTypingGame();
-
-<div id="container">
-            <h1>Typing speed game</h1>
-            <textarea ref={textRef} name="words" id="" cols="30" rows="10"  value={textData} onChange={handleChange} disabled={!isStarted}/>
-            <h4>Time remaining: {timeRemaining}</h4>
-            <button onClick={startGame} disabled={isStarted} >start game</button>
-            <h2>word count: {wordCount}</h2>
-            <br/>
-
-        </div>
-*/
-
-/* render prop function- to create a format that lets us keep our components style & elements, while easily keeping render logic to not rewrite.
-
-
-<DataFetcher
-    url={"https://swapi.dev/api/people/1/?format=json"}
-    render={(data, isLoaded) => {
-       return (
-         <>
-             {
-             isLoaded ? <p>{data.name}</p>
-             :  <h1>Loading...</h1>
-             }
-        </>
-       )
-    }}
-/>
-*/
-
-
-/*
-form data list gen with submit button
-function App() {
-    const [formData, setFormData] = useState({task: ""})
-
-    const [tasks, setTasks] = useState([]);
-
-    function handleChange(event) {
-        setFormData(prevData => {
-            return {
-            ...prevData,
-                [event.target.name]: event.target.value
-            }
-        })
-
-    }
-
-    function submitTask(event) {
-        event.preventDefault();
-        setTasks(prevTask => {
-            return [
-                ...prevTask,
-                formData
-            ]
-        })
-        setFormData({task: ""});
-        document.querySelector('input[type="text"]').focus();
-    }
-
-
-
-    return (
-        <div className="container">
-            <form action="" onSubmit={submitTask} >
-                <input type="text"
-                    placeholder={"task"}
-                    name={"task"}
-                    value={formData.task}
-                    onChange={handleChange}
-                />
-                <button >Submit</button>
-            </form>
-
-            <Overview
-                tasks={tasks}
-            />
-        </div>
-    )
-}
-
-
-*
-*  */
-
-/* Box testing, local state and passed down state
-
-
-function App(props) {
-
-
-    const [squares, setSquares] = React.useState(boxes);
-
-    function toggle(id) {
-        //something with setSquares and loop over to match id!
-        console.log(id);
-        setSquares(prevSquares => {
-            return prevSquares.map((square) => {
-                return square.id === id ? {...square, on: !square.on} : square;
-            })
-        })
-    }
-
-    const squareElements = squares.map(item => {
-        return <Box on={item.on} key={item.id} toggle={() => toggle(item.id)}></Box>
-    })
-
-    return (
-        <main>
-            <h1>Boxes will go here</h1>
-            <div className="holder">
-                {squareElements}
-            </div>
-
-        </main>
-    )
-}
-*/
-
-/* meme generator project
-<div className={"container"}>
-                <MemeGen_Navbar />
-                <div className="content">
-                    <Meme />
-
-                </div>
-            </div> */
-
-/*
-travel journal project
-
-function App() {
-
-const TravelElements = TravelData.map(item => {
-    return <Travel_Place
-            item={item}
-            key={item.id}
-    />
-})
-    return (
-
-            <div className={"container"}>
-                <Travel_Navbar></Travel_Navbar>
-                <div className="content">
-                    {TravelElements}
-                </div>
-            </div>
-  )
-}
-*/
-
-/*  Airbnb project
-import Airbnb_Navbar from "./components/Airbnb_Navbar.jsx";
-import Airbnb_Content from "./components/Airbnb_content.jsx";
-import Airbnb_Card from "./components/Airbnb_Card.jsx";
-import AirData from "./data/air-data.jsx";
-
-
-
-function App() {
-
-    let AirElements = AirData.map((item) => {
-    return <Airbnb_Card
-            key={item.id}
-            item={item}
-    />
-})
-
-
-    return (
-
-            <div className={"container"}>
-                <Airbnb_Navbar></Airbnb_Navbar>
-                <Airbnb_Content></Airbnb_Content>
-                <div className="airbnb-cards">
-                    {AirElements}
-                </div>
-            </div>
-  )
-}
-*  */
-
-/* Darkmode project
-function App() {
-
-    const [dark_Mode, setDark_Mode] = useState(false)
-
-    function toggleDarkMode() {
-        setDark_Mode(prevState => !prevState)
-    }
-
-
-
-
-    return (
-       <div className={"container"}>
-           <FunFacts_Navbar
-            // key={1}
-            darkMode={dark_Mode}
-            toggleDarkMode={toggleDarkMode}
-           />
-           <FunFacts_Main
-           // key={2}
-           darkMode={dark_Mode}
-
-
-           />
-
-            </div>
-    )
-} */
 
 
 
